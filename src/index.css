@@ -23,8 +23,8 @@
 
   /* Light theme */
   .light {
-    --bg-primary: #fdf7ec;
-    --bg-secondary: #fdf4e8;
+    --bg-primary: #fff;
+    --bg-secondary: #f9fafb;
     --text-primary: #1f2937;
     --text-secondary: #6b7280;
   }
@@ -214,94 +214,94 @@
 
   .light body {
     transition: background 2.2s ease-in-out;
-    background: linear-gradient(to bottom right, #fffaf0, #f1f9ff);
+    background: linear-gradient(to bottom right, #ffe4ec, #fff0f6);
   }
 
-  /* Gradient Theme 0 - Aurora Borealis */
+  /* Gradient Theme 0 - Aurora Borealis (pastel pink base) */
   .light[data-gradient="0"] body {
     background: 
-      radial-gradient(circle at 20% 30%, rgba(34, 197, 94, 0.18) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-      radial-gradient(circle at 70% 80%, rgba(168, 85, 247, 0.12) 0%, transparent 50%),
-      radial-gradient(circle at 30% 70%, rgba(14, 165, 233, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 20% 30%, rgba(255, 192, 203, 0.18) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 182, 193, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 70% 80%, rgba(255, 174, 185, 0.12) 0%, transparent 50%),
+      radial-gradient(circle at 30% 70%, rgba(255, 228, 235, 0.1) 0%, transparent 50%),
       linear-gradient(135deg, 
-        rgba(240, 253, 244, 0.95) 0%,
-        rgba(239, 246, 255, 0.9) 25%,
-        rgba(245, 243, 255, 0.85) 50%,
-        rgba(240, 249, 255, 0.9) 75%,
-        rgba(248, 250, 252, 0.95) 100%
+        rgba(255, 228, 235, 0.95) 0%,
+        rgba(255, 234, 244, 0.9) 25%,
+        rgba(255, 224, 238, 0.85) 50%,
+        rgba(255, 240, 246, 0.9) 75%,
+        rgba(255, 244, 250, 0.95) 100%
       );
     background-attachment: fixed;
     background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
   }
 
-  /* Gradient Theme 1 - Sunset Dreams */
+  /* Gradient Theme 1 - Sunset Dreams (pastel pink base) */
   .light[data-gradient="1"] body {
     background: 
-      radial-gradient(circle at 20% 30%, rgba(251, 146, 60, 0.18) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, rgba(239, 68, 68, 0.15) 0%, transparent 50%),
-      radial-gradient(circle at 70% 80%, rgba(236, 72, 153, 0.12) 0%, transparent 50%),
-      radial-gradient(circle at 30% 70%, rgba(245, 101, 101, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 20% 30%, rgba(255, 182, 193, 0.18) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 174, 185, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 70% 80%, rgba(255, 192, 203, 0.12) 0%, transparent 50%),
+      radial-gradient(circle at 30% 70%, rgba(255, 228, 235, 0.1) 0%, transparent 50%),
       linear-gradient(135deg, 
-        rgba(255, 251, 235, 0.95) 0%,
-        rgba(254, 242, 242, 0.9) 25%,
-        rgba(253, 242, 248, 0.85) 50%,
-        rgba(255, 228, 230, 0.9) 75%,
-        rgba(255, 245, 245, 0.95) 100%
+        rgba(255, 234, 244, 0.95) 0%,
+        rgba(255, 224, 238, 0.9) 25%,
+        rgba(255, 240, 246, 0.85) 50%,
+        rgba(255, 244, 250, 0.9) 75%,
+        rgba(255, 250, 252, 0.95) 100%
       );
     background-attachment: fixed;
     background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
   }
 
-  /* Gradient Theme 2 - Ocean Depths */
+  /* Gradient Theme 2 - Ocean Depths (pastel pink base) */
   .light[data-gradient="2"] body {
     background: 
-      radial-gradient(circle at 20% 30%, rgba(6, 182, 212, 0.18) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-      radial-gradient(circle at 70% 80%, rgba(99, 102, 241, 0.12) 0%, transparent 50%),
-      radial-gradient(circle at 30% 70%, rgba(14, 165, 233, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 20% 30%, rgba(255, 192, 203, 0.18) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 182, 193, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 70% 80%, rgba(255, 174, 185, 0.12) 0%, transparent 50%),
+      radial-gradient(circle at 30% 70%, rgba(255, 228, 235, 0.1) 0%, transparent 50%),
       linear-gradient(135deg, 
-        rgba(240, 249, 255, 0.95) 0%,
-        rgba(239, 246, 255, 0.9) 25%,
-        rgba(238, 242, 255, 0.85) 50%,
-        rgba(235, 245, 255, 0.9) 75%,
-        rgba(248, 250, 252, 0.95) 100%
+        rgba(255, 240, 246, 0.95) 0%,
+        rgba(255, 244, 250, 0.9) 25%,
+        rgba(255, 250, 252, 0.85) 50%,
+        rgba(255, 234, 244, 0.9) 75%,
+        rgba(255, 228, 235, 0.95) 100%
       );
     background-attachment: fixed;
     background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
   }
 
-  /* Gradient Theme 3 - Mystic Forest */
+  /* Gradient Theme 3 - Mystic Forest (pastel pink base) */
   .light[data-gradient="3"] body {
     background: 
-      radial-gradient(circle at 20% 30%, rgba(34, 197, 94, 0.18) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, rgba(101, 163, 13, 0.15) 0%, transparent 50%),
-      radial-gradient(circle at 70% 80%, rgba(22, 163, 74, 0.12) 0%, transparent 50%),
-      radial-gradient(circle at 30% 70%, rgba(132, 204, 22, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 20% 30%, rgba(255, 192, 203, 0.18) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 182, 193, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 70% 80%, rgba(255, 174, 185, 0.12) 0%, transparent 50%),
+      radial-gradient(circle at 30% 70%, rgba(255, 228, 235, 0.1) 0%, transparent 50%),
       linear-gradient(135deg, 
-        rgba(240, 253, 244, 0.95) 0%,
-        rgba(247, 254, 231, 0.9) 25%,
-        rgba(236, 253, 245, 0.85) 50%,
-        rgba(240, 253, 250, 0.9) 75%,
-        rgba(248, 250, 252, 0.95) 100%
+        rgba(255, 244, 250, 0.95) 0%,
+        rgba(255, 250, 252, 0.9) 25%,
+        rgba(255, 234, 244, 0.85) 50%,
+        rgba(255, 228, 235, 0.9) 75%,
+        rgba(255, 240, 246, 0.95) 100%
       );
     background-attachment: fixed;
     background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
   }
 
-  /* Gradient Theme 4 - Solar Flare */
+  /* Gradient Theme 4 - Solar Flare (pastel pink base) */
   .light[data-gradient="4"] body {
     background:
-      radial-gradient(circle at 20% 30%, rgba(251, 113, 133, 0.18) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, rgba(253, 186, 116, 0.15) 0%, transparent 50%),
-      radial-gradient(circle at 70% 80%, rgba(249, 115, 22, 0.12) 0%, transparent 50%),
-      radial-gradient(circle at 30% 70%, rgba(239, 68, 68, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 20% 30%, rgba(255, 192, 203, 0.18) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 182, 193, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 70% 80%, rgba(255, 174, 185, 0.12) 0%, transparent 50%),
+      radial-gradient(circle at 30% 70%, rgba(255, 228, 235, 0.1) 0%, transparent 50%),
       linear-gradient(135deg,
         rgba(255, 241, 242, 0.95) 0%,
         rgba(255, 237, 213, 0.9) 25%,
         rgba(254, 215, 170, 0.85) 50%,
         rgba(254, 226, 226, 0.9) 75%,
-        rgba(255, 245, 245, 0.95) 100%
+        rgba(255, 244, 250, 0.95) 100%
       );
     background-attachment: fixed;
     background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
@@ -404,18 +404,18 @@
   /* Enhanced glassmorphism for light theme with gradient-aware styling */
   .light .glass {
     background: linear-gradient(135deg,
-      rgba(255, 255, 255, 0.4) 0%,
-      rgba(248, 250, 252, 0.35) 25%,
-      rgba(243, 244, 246, 0.3) 50%,
-      rgba(249, 250, 251, 0.35) 75%,
-      rgba(255, 255, 255, 0.4) 100%
+      rgba(255, 228, 235, 0.4) 0%,
+      rgba(255, 244, 250, 0.35) 25%,
+      rgba(255, 240, 246, 0.3) 50%,
+      rgba(255, 234, 244, 0.35) 75%,
+      rgba(255, 228, 235, 0.4) 100%
     );
     backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 228, 235, 0.4);
     border-radius: 20px;
     box-shadow: 
-      0 8px 32px rgba(139, 92, 246, 0.1),
-      0 4px 16px rgba(59, 130, 246, 0.08),
+      0 8px 32px rgba(255, 192, 203, 0.1),
+      0 4px 16px rgba(255, 182, 193, 0.08),
       inset 0 1px 0 rgba(255, 255, 255, 0.6),
       inset 0 -1px 0 rgba(255, 255, 255, 0.2);
     transition: all 2.2s ease-in-out;
@@ -441,19 +441,19 @@
   /* Enhanced glassmorphism for light theme headers and banners */
   .light-glass-header {
     background: linear-gradient(135deg,
-      rgba(255, 255, 255, 0.6) 0%,
-      rgba(248, 250, 252, 0.55) 20%,
-      rgba(243, 232, 255, 0.5) 40%,
-      rgba(239, 246, 255, 0.55) 60%,
-      rgba(255, 255, 255, 0.6) 100%
+      rgba(255, 228, 235, 0.6) 0%,
+      rgba(255, 244, 250, 0.55) 20%,
+      rgba(255, 240, 246, 0.5) 40%,
+      rgba(255, 234, 244, 0.55) 60%,
+      rgba(255, 228, 235, 0.6) 100%
     );
     backdrop-filter: blur(24px) saturate(200%);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 228, 235, 0.5);
     border-radius: 22px;
     box-shadow: 
-      0 16px 48px rgba(139, 92, 246, 0.12),
-      0 8px 24px rgba(59, 130, 246, 0.1),
-      0 4px 12px rgba(147, 51, 234, 0.08),
+      0 16px 48px rgba(255, 192, 203, 0.12),
+      0 8px 24px rgba(255, 182, 193, 0.1),
+      0 4px 12px rgba(255, 174, 185, 0.08),
       inset 0 2px 0 rgba(255, 255, 255, 0.8),
       inset 0 -1px 0 rgba(255, 255, 255, 0.4);
     transition: all 2.2s ease-in-out;
@@ -463,15 +463,15 @@
   .animated-gradient-light {
     background: linear-gradient(
       45deg,
-      #FFFAF0 0%,
-      #FDF5E6 12.5%,
-      #FAF0E6 25%,
-      #F5F5DC 37.5%,
-      #FFF8DC 50%,
-      #FFEFD5 62.5%,
-      #FFE4E1 75%,
-      #F0F8FF 87.5%,
-      #FFFAF0 100%
+      #ffe4ec 0%,
+      #fff0f6 12.5%,
+      #ffeaf4 25%,
+      #fff5fa 37.5%,
+      #ffe4ec 50%,
+      #fff0f6 62.5%,
+      #ffeaf4 75%,
+      #fff5fa 87.5%,
+      #ffe4ec 100%
     );
     background-size: 400% 400%;
     animation: gradientShift 10s ease infinite;
@@ -1005,4 +1005,168 @@
 @keyframes starTwinkle {
   0%, 100% { opacity: 0.8; }
   50% { opacity: 0.3; }
+}
+
+/* Project Catalog Specific Styles */
+.project-row {
+  @apply relative;
+}
+
+.project-row .scroll-container {
+  @apply flex gap-4 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.project-row .scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+.project-card-wrapper {
+  @apply snap-start flex-shrink-0;
+  min-width: 0;
+}
+
+.project-card {
+  @apply relative;
+  aspect-ratio: 2/3;
+}
+
+.project-card.featured {
+  aspect-ratio: 16/10;
+}
+
+/* Ensure consistent card heights */
+.project-card .card-content {
+  @apply absolute inset-0 flex flex-col;
+}
+
+.project-card .card-image {
+  @apply relative w-full h-full;
+}
+
+.project-card .card-overlay {
+  @apply absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent;
+}
+
+.project-card .card-badges {
+  @apply absolute top-3 left-3 flex flex-col gap-2 z-20;
+}
+
+.project-card .card-rating {
+  @apply absolute top-3 right-3 z-20;
+}
+
+.project-card .card-tags {
+  @apply absolute bottom-20 left-3 right-3 z-20;
+}
+
+.project-card .card-bottom {
+  @apply absolute bottom-0 left-0 right-0 p-4 z-20;
+}
+
+.project-card .card-progress {
+  @apply space-y-2;
+}
+
+.project-card .card-progress-bar {
+  @apply w-full bg-gray-700/50 rounded-full h-2 overflow-hidden backdrop-blur-sm;
+}
+
+.project-card .card-progress-fill {
+  @apply h-full rounded-full shadow-lg;
+}
+
+/* Scroll buttons */
+.scroll-button {
+  @apply absolute top-1/2 transform -translate-y-1/2 z-10 w-12 h-12 bg-black/80 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-black;
+}
+
+.scroll-button.left {
+  @apply left-0;
+}
+
+.scroll-button.right {
+  @apply right-0;
+}
+
+/* Ensure proper spacing between sections */
+.catalog-section {
+  @apply space-y-12;
+}
+
+/* Fix for compact cards */
+.project-card.compact {
+  aspect-ratio: 2/3;
+}
+
+.project-card.compact .card-content {
+  @apply p-3;
+}
+
+.project-card.compact .card-title {
+  @apply text-sm;
+}
+
+.project-card.compact .card-description {
+  @apply hidden;
+}
+
+.project-card.compact .card-tags {
+  @apply hidden;
+}
+
+/* Ensure funding bars are always visible */
+.project-card .funding-info {
+  @apply space-y-2;
+}
+
+.project-card .funding-label {
+  @apply flex items-center justify-between text-xs;
+}
+
+.project-card .funding-percentage {
+  @apply font-bold;
+}
+
+.project-card .funding-percentage.high {
+  @apply text-green-400;
+}
+
+.project-card .funding-percentage.medium {
+  @apply text-yellow-400;
+}
+
+.project-card .funding-percentage.low {
+  @apply text-gray-300;
+}
+
+/* Hover effects */
+.project-card .hover-content {
+  @apply absolute inset-0 bg-gradient-to-t from-black/95 via-black/80 to-black/60 flex flex-col justify-end p-4 z-30 backdrop-blur-sm;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .project-card-wrapper {
+    min-width: 200px;
+  }
+  
+  .project-card.featured {
+    aspect-ratio: 16/9;
+  }
+}
+
+@media (max-width: 640px) {
+  .project-card-wrapper {
+    min-width: 160px;
+  }
+  
+  .scroll-button {
+    @apply w-10 h-10;
+  }
+  
+  .scroll-button .icon {
+    @apply w-5 h-5;
+  }
 }

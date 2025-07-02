@@ -1,4 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { extendedProjects } from '../../data/extendedProjects';
+import { merchandise } from '../../data/merchandise';
+import { perks } from '../../data/perks';
 
 // Types for our data models
 export interface Project {
@@ -13,6 +16,13 @@ export interface Project {
   createdAt: string;
   updatedAt: string;
   poster?: string;
+  description?: string;
+  director?: string;
+  genre?: string;
+  tags?: string[];
+  perks?: string[];
+  rating?: number;
+  trailer?: string;
 }
 
 export interface MerchandiseItem {
@@ -125,160 +135,16 @@ const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
 // Provider component
 export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  // Mock data
-  const [projects, setProjects] = useState<Project[]>([
-    {
-      id: '1',
-      title: 'Pathaan 2',
-      type: 'film',
-      category: 'Bollywood',
-      status: 'active',
-      fundedPercentage: 85,
-      targetAmount: 15000000,
-      raisedAmount: 12750000,
-      createdAt: '2023-12-15T10:30:00Z',
-      updatedAt: '2024-01-20T14:45:00Z',
-      poster: 'https://m.media-amazon.com/images/M/MV5BOGY4NWNlM2QtMzVjYy00OGY1LWI4N2UtZDNlYWE2ZThjYmRmXkEyXkFqcGdeQXVyMTUzNTgzNzM0._V1_FMjpg_UX1000_.jpg'
-    },
-    {
-      id: '2',
-      title: 'A.R. Rahman: Symphony of India',
-      type: 'music',
-      category: 'Bollywood',
-      status: 'active',
-      fundedPercentage: 95,
-      targetAmount: 5000000,
-      raisedAmount: 4750000,
-      createdAt: '2023-11-10T08:15:00Z',
-      updatedAt: '2024-01-15T11:20:00Z',
-      poster: 'https://i.scdn.co/image/ab67616d0000b273f54b99bf27cda88f4a7403ac'
-    },
-    {
-      id: '3',
-      title: 'Sacred Games 3',
-      type: 'webseries',
-      category: 'Indian',
-      status: 'pending',
-      fundedPercentage: 45,
-      targetAmount: 12000000,
-      raisedAmount: 5400000,
-      createdAt: '2024-01-05T09:45:00Z',
-      updatedAt: '2024-01-25T16:30:00Z',
-      poster: 'https://m.media-amazon.com/images/M/MV5BMzRjZWVmMzItNTdmYS00OWEzLTgyOGUtNThiNTU2ZThlYjY0XkEyXkFqcGdeQXVyOTAzMTc2MjA@._V1_FMjpg_UX1000_.jpg'
-    },
-    {
-      id: '4',
-      title: 'RRR 2',
-      type: 'film',
-      category: 'Regional',
-      status: 'active',
-      fundedPercentage: 78,
-      targetAmount: 35000000,
-      raisedAmount: 27300000,
-      createdAt: '2023-10-20T14:00:00Z',
-      updatedAt: '2024-01-10T09:15:00Z',
-      poster: 'https://m.media-amazon.com/images/M/MV5BODUwNDNjYzctODUxNy00ZTA2LWIyYTEtMDc5Y2E5ZjBmNTMzXkEyXkFqcGdeQXVyODE5NzE3OTE@._V1_FMjpg_UX1000_.jpg'
-    },
-    {
-      id: '5',
-      title: 'Jawan: The Return',
-      type: 'film',
-      category: 'Bollywood',
-      status: 'completed',
-      fundedPercentage: 100,
-      targetAmount: 18000000,
-      raisedAmount: 18000000,
-      createdAt: '2023-09-15T11:30:00Z',
-      updatedAt: '2023-12-20T15:45:00Z',
-      poster: 'https://m.media-amazon.com/images/M/MV5BYjFjMTQzY2EtZjQ5MC00NGUyLWJiYWMtZDI3MTQ1MGU4OGY2XkEyXkFqcGdeQXVyMTUzNTgzNzM0._V1_FMjpg_UX1000_.jpg'
-    }
-  ]);
+  // Use real project data
+  const [projects, setProjects] = useState<Project[]>(extendedProjects);
+  // TODO: When you add real data files for users, merchandise, perks, or media, import them here and use them as initial state.
+  // Example:
+  // import { users as realUsers } from '../../data/users';
+  // const [users, setUsers] = useState<User[]>(realUsers);
 
-  const [merchandiseItems, setMerchandiseItems] = useState<MerchandiseItem[]>([
-    {
-      id: '1',
-      title: 'Pathaan 2 Limited Edition T-Shirt',
-      category: 'apparel',
-      price: 1299,
-      stockLevel: 150,
-      status: 'in-stock',
-      image: 'https://images.pexels.com/photos/8532616/pexels-photo-8532616.jpeg?auto=compress&cs=tinysrgb&w=400',
-      createdAt: '2023-12-20T10:30:00Z'
-    },
-    {
-      id: '2',
-      title: 'RRR 2 Collector\'s Watch',
-      category: 'accessories',
-      price: 4999,
-      stockLevel: 25,
-      status: 'low-stock',
-      image: 'https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg?auto=compress&cs=tinysrgb&w=400',
-      createdAt: '2023-11-15T14:45:00Z'
-    },
-    {
-      id: '3',
-      title: 'A.R. Rahman Symphony Vinyl Record',
-      category: 'collectibles',
-      price: 2499,
-      stockLevel: 0,
-      status: 'out-of-stock',
-      image: 'https://images.pexels.com/photos/1389429/pexels-photo-1389429.jpeg?auto=compress&cs=tinysrgb&w=400',
-      createdAt: '2024-01-10T09:15:00Z'
-    },
-    {
-      id: '4',
-      title: 'Sacred Games 3 Poster Set',
-      category: 'collectibles',
-      price: 999,
-      stockLevel: 75,
-      status: 'in-stock',
-      image: 'https://images.pexels.com/photos/1047540/pexels-photo-1047540.jpeg?auto=compress&cs=tinysrgb&w=400',
-      createdAt: '2024-01-25T16:30:00Z'
-    }
-  ]);
+  const [merchandiseItems, setMerchandiseItems] = useState<MerchandiseItem[]>(merchandise);
 
-  const [perks, setPerks] = useState<Perk[]>([
-    {
-      id: '1',
-      title: 'Digital Poster Collection',
-      description: 'Exclusive digital posters from the film',
-      projectId: '1',
-      projectTitle: 'Pathaan 2',
-      tier: 'supporter',
-      minAmount: 10000,
-      createdAt: '2023-12-15T11:30:00Z'
-    },
-    {
-      id: '2',
-      title: 'Virtual Meet & Greet',
-      description: 'Online session with the cast',
-      projectId: '1',
-      projectTitle: 'Pathaan 2',
-      tier: 'backer',
-      minAmount: 25000,
-      createdAt: '2023-12-16T14:45:00Z'
-    },
-    {
-      id: '3',
-      title: 'Studio Recording Session',
-      description: 'Attend a live recording session',
-      projectId: '2',
-      projectTitle: 'A.R. Rahman: Symphony of India',
-      tier: 'producer',
-      minAmount: 50000,
-      createdAt: '2023-11-12T09:30:00Z'
-    },
-    {
-      id: '4',
-      title: 'Executive Producer Credit',
-      description: 'Your name in the opening credits',
-      projectId: '3',
-      projectTitle: 'Sacred Games 3',
-      tier: 'executive',
-      minAmount: 100000,
-      createdAt: '2024-01-07T15:20:00Z'
-    }
-  ]);
+  const [perksState, setPerks] = useState<Perk[]>(perks);
 
   const [mediaAssets, setMediaAssets] = useState<MediaAsset[]>([
     {
@@ -619,7 +485,7 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   };
 
   const deletePerk = (id: string) => {
-    const perkToDelete = perks.find(p => p.id === id);
+    const perkToDelete = perksState.find(p => p.id === id);
     
     setPerks(prev => prev.filter(perk => perk.id !== id));
     
@@ -801,7 +667,7 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     updateMerchandiseItem,
     deleteMerchandiseItem,
     
-    perks,
+    perks: perksState,
     addPerk,
     updatePerk,
     deletePerk,

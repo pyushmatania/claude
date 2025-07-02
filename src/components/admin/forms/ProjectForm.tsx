@@ -13,7 +13,7 @@ interface ProjectFormProps {
 
 const ProjectForm: React.FC<ProjectFormProps> = ({ project, isOpen, onClose }) => {
   const { theme } = useTheme();
-  const { addProject, updateProject, projects } = useAdmin();
+  const { addProject, updateProject } = useAdmin();
   const { toast } = useToast();
   
   const [formData, setFormData] = useState<Omit<Project, 'id' | 'createdAt' | 'updatedAt'>>({

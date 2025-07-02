@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Film, Music, Clock, Users, TrendingUp, ArrowRight } from 'lucide-react';
+import { Film, Music, Clock, Users, TrendingUp, ArrowRight, DollarSign } from 'lucide-react';
 import AnimatedNumber from './AnimatedNumber';
 import { extendedProjects } from '../data/extendedProjects';
 import ProjectDetailModal from './ProjectDetailModal';
@@ -120,7 +120,7 @@ const LiveProjects: React.FC<LiveProjectsProps> = ({ onViewAll }) => {
                 
                 {/* Tags */}
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {project.tags.map((tag, tagIndex) => (
+                  {project.tags.map((tag: string, tagIndex: number) => (
                     <span 
                       key={tagIndex}
                       className={`px-3 py-1 text-xs font-medium rounded-full border ${
@@ -216,35 +216,59 @@ const LiveProjects: React.FC<LiveProjectsProps> = ({ onViewAll }) => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className={`flex flex-col md:flex-row justify-center items-center gap-8 md:gap-16 p-8 rounded-2xl backdrop-blur-xl border ${
-            theme === 'light'
-              ? 'bg-white/40 border-white/60'
-              : 'bg-gradient-to-r from-white/5 to-white/10 border-white/20'
-          }`}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
         >
-          <div className="text-center">
-            <div className={`text-4xl font-extrabold mb-2 ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
-              <AnimatedNumber value={47} format={(v)=>`₹${v}L+`} />
+          {/* Active Projects */}
+          <div className="relative p-8 rounded-2xl border border-white/30 bg-white/10 backdrop-blur-xl flex flex-col items-center shadow-lg">
+            <div className="w-16 h-16 rounded-xl mb-4 animate-gradient-pulse" style={{background: 'linear-gradient(135deg, #a259ff 0%, #fd5fff 100%)', boxShadow: '0 0 32px 8px #a259ff44'}} />
+            <div className="text-5xl font-extrabold mb-2 text-[#a259ff]">20</div>
+            <div className="flex items-center gap-1 mb-2">
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-green-500/20 text-green-400 font-bold text-sm">
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12l5 5L20 7"/></svg>
+                +45%
+              </span>
             </div>
-            <div className={`${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>Total Raised</div>
+            <div className="text-white font-bold text-xl mb-1">Active Projects</div>
+            <div className="text-teal-200 text-base opacity-80">Films, Music & Series</div>
           </div>
-          <div className="text-center">
-            <div className={`text-4xl font-extrabold mb-2 ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}> 
-              <AnimatedNumber value={12} />
+          {/* Total Raised */}
+          <div className="relative p-8 rounded-2xl border border-white/30 bg-white/10 backdrop-blur-xl flex flex-col items-center shadow-lg">
+            <div className="w-16 h-16 rounded-xl mb-4 animate-gradient-pulse" style={{background: 'linear-gradient(135deg, #00ff85 0%, #00e0ff 100%)', boxShadow: '0 0 32px 8px #00ff8544'}} />
+            <div className="text-5xl font-extrabold mb-2 text-[#00ff85]">₹30Cr+</div>
+            <div className="flex items-center gap-1 mb-2">
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-green-500/20 text-green-400 font-bold text-sm">
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12l5 5L20 7"/></svg>
+                +127%
+              </span>
             </div>
-            <div className={`${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>Active Projects</div>
+            <div className="text-white font-bold text-xl mb-1">Total Raised</div>
+            <div className="text-teal-200 text-base opacity-80">Across all projects</div>
           </div>
-          <div className="text-center">
-            <div className={`text-4xl font-extrabold mb-2 ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}> 
-              <AnimatedNumber value={1200} format={(v)=>`${v.toLocaleString()}+`} />
+          {/* Total Investors */}
+          <div className="relative p-8 rounded-2xl border border-white/30 bg-white/10 backdrop-blur-xl flex flex-col items-center shadow-lg">
+            <div className="w-16 h-16 rounded-xl mb-4 animate-gradient-pulse" style={{background: 'linear-gradient(135deg, #00e0ff 0%, #0078ff 100%)', boxShadow: '0 0 32px 8px #00e0ff44'}} />
+            <div className="text-5xl font-extrabold mb-2 text-[#00e0ff]">40,000+</div>
+            <div className="flex items-center gap-1 mb-2">
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-green-500/20 text-green-400 font-bold text-sm">
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12l5 5L20 7"/></svg>
+                +89%
+              </span>
             </div>
-            <div className={`${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>Investors</div>
+            <div className="text-white font-bold text-xl mb-1">Total Investors</div>
+            <div className="text-teal-200 text-base opacity-80">Active community</div>
           </div>
-          <div className="text-center">
-            <div className="text-4xl font-extrabold text-green-400 mb-2">
-              <AnimatedNumber value={15} format={(v)=>`${v}%`} />
+          {/* Avg Returns */}
+          <div className="relative p-8 rounded-2xl border border-white/30 bg-white/10 backdrop-blur-xl flex flex-col items-center shadow-lg">
+            <div className="w-16 h-16 rounded-xl mb-4 animate-gradient-pulse" style={{background: 'linear-gradient(135deg, #ffb300 0%, #ff6a00 100%)', boxShadow: '0 0 32px 8px #ffb30044'}} />
+            <div className="text-5xl font-extrabold mb-2 text-[#ffb300]">230%</div>
+            <div className="flex items-center gap-1 mb-2">
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-green-500/20 text-green-400 font-bold text-sm">
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12l5 5L20 7"/></svg>
+                +23%
+              </span>
             </div>
-            <div className={`${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>Avg. Returns</div>
+            <div className="text-white font-bold text-xl mb-1">Avg Returns</div>
+            <div className="text-teal-200 text-base opacity-80">Quarterly average</div>
           </div>
         </motion.div>
 

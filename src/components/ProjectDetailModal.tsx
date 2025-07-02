@@ -524,8 +524,8 @@ TITLE CARD: "NEON NIGHTS"`,
                 </div>
               </div>
 
-              {/* Main Content - Fixed height with scroll */}
-              <div className="flex-1 modal-content">
+              {/* Main Content - Scrollable */}
+              <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-500 scrollbar-track-gray-300">
                 {/* Overview Tab */}
                 {activeTab === 'overview' && (
                   <motion.div

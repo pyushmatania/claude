@@ -1,0 +1,37 @@
+const fs = require('fs');
+const path = require('path');
+
+const INPUT = path.join(__dirname, 'omdb-fetcher', 'projects.json');
+const OUTPUT = path.join(__dirname, 'src', 'data', 'extendedProjects.ts');
+
+const languages = ['Hindi', 'English', 'Tamil', 'Telugu', 'Malayalam'];
+const timeLefts = ['2 days', '3 days', '5 days', '7 days', '10 days', '14 days'];
+
+function randomFrom(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+const projects = JSON.parse(fs.readFileSync(INPUT, 'utf8'));
+const ts = `import { Project } from '../components/admin/AdminContext';
+
+export const extendedProjects: Project[] = [
+${projects.map(p => {
+  return `  {
+    ${Object.entries(p).map(([k, v]) => {
+      if (Array.isArray(v)) {
+        return `${k}: [${v.map(x => JSON.stringify(x)).join(', ')}]`;
+      } else if (typeof v === 'string') {
+        return `${k}: ${JSON.stringify(v)}`;
+      } else {
+        return `${k}: ${v}`;
+      }
+    }).join(',\n    ')},
+    language: ${JSON.stringify(randomFrom(languages))},
+    timeLeft: ${JSON.stringify(randomFrom(timeLefts))}
+  }`;
+}).join(',\n')}
+];
+`;
+
+fs.writeFileSync(OUTPUT, ts, 'utf8');
+console.log('✅ extendedProjects.ts updated!');

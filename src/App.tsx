@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Hero from './components/Hero';
 import ProblemSolution from './components/ProblemSolution';
 import HowItWorks from './components/HowItWorks';
@@ -22,7 +22,7 @@ import ProjectComparison from './components/ProjectComparison';
 import NewsAndUpdates from './components/NewsAndUpdates';
 import NotificationCenter from './components/NotificationCenter';
 import EnhancedSearch from './components/EnhancedSearch';
-import { ThemeProvider } from './components/ThemeProvider';
+import { ThemeProvider, useTheme } from './components/ThemeProvider';
 import { AuthProvider, useAuth } from './components/auth/AuthProvider';
 import { useToast } from './hooks/useToast';
 
@@ -32,6 +32,7 @@ function AppContent() {
   const [authModalMode, setAuthModalMode] = useState<'login' | 'register'>('login');
   const { isAuthenticated } = useAuth();
   const { toasts, toast, removeToast } = useToast();
+  const { theme } = useTheme();
 
   const handleAuthRequired = (mode: 'login' | 'register' = 'login') => {
     if (!isAuthenticated) {
@@ -99,7 +100,7 @@ function AppContent() {
   };
 
   return (
-    <div className="min-h-screen transition-colors duration-300">
+    <div className={`min-h-screen transition-colors duration-300 ${theme === 'light' ? 'animated-gradient-light' : ''}`}>
       <Navigation 
         currentView={currentView} 
         setCurrentView={handleViewChange}

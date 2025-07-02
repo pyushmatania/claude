@@ -1,13 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
 import { 
   Plus, 
-  Filter, 
   Search, 
   Edit, 
   Trash2, 
   Archive, 
-  MoreVertical,
   Film,
   Music,
   Tv,
@@ -15,8 +12,6 @@ import {
   Clock,
   XCircle,
   Download,
-  ChevronDown,
-  ChevronUp,
   RefreshCw
 } from 'lucide-react';
 import { useTheme } from '../../ThemeProvider';
@@ -41,6 +36,13 @@ const ProjectsPanel: React.FC = () => {
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [sortField, setSortField] = useState<string>('createdAt');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+
+  // OMDB Fetcher state
+  const [omdbInput, setOmdbInput] = useState('');
+  const [omdbMode, setOmdbMode] = useState<'replace' | 'add'>('add');
+  const [omdbLoading, setOmdbLoading] = useState(false);
+  const [omdbError, setOmdbError] = useState<string | null>(null);
+  const [omdbResults, setOmdbResults] = useState<any[]>([]);
 
   // Define valid sort fields for type safety
   const validSortFields: (keyof Project)[] = [
@@ -276,8 +278,160 @@ const ProjectsPanel: React.FC = () => {
     }
   ];
 
+  // Helper: fetch YouTube trailer link
+  const fetchYouTubeTrailer = async (query: string) => {
+    // Use YouTube search page as fallback (no API key)
+    return `https://www.youtube.com/results?search_query=${encodeURIComponent(query + ' official trailer')}`;
+  };
+
+  // Fetch OMDB and trailer for each movie in batch
+  const fetchOMDBBatch = async () => {
+    setOmdbLoading(true);
+    setOmdbError(null);
+    setOmdbResults([]);
+    const apiKey = 'thewdb'; // Demo key, replace with your own for production
+    const names = omdbInput.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+    const results: any[] = [];
+    for (const name of names) {
+      try {
+        let url = `https://www.omdbapi.com/?apikey=${apiKey}&t=${encodeURIComponent(name)}`;
+        let res = await fetch(url);
+        let data = await res.json();
+        if (data.Response === 'False') {
+          url = `https://www.omdbapi.com/?apikey=${apiKey}&i=${encodeURIComponent(name)}`;
+          res = await fetch(url);
+          data = await res.json();
+        }
+        if (data.Response === 'False') {
+          results.push({ error: 'Not found', name });
+        } else {
+          const trailer = await fetchYouTubeTrailer(data.Title || name);
+          results.push({ ...data, trailer });
+        }
+      } catch (e) {
+        results.push({ error: 'Error fetching', name });
+      }
+    }
+    setOmdbResults(results);
+    setOmdbLoading(false);
+  };
+
+  // Apply OMDB batch results
+  const { projects: adminProjects, ...adminActions } = useAdmin();
+  const applyOMDBBatch = () => {
+    const valid = omdbResults.filter(r => !r.error);
+    const mapped = valid.map(omdbData => {
+      const newProject: Project = {
+        id: Date.now().toString() + Math.random().toString(36).slice(2, 8),
+        title: omdbData.Title,
+        type: 'film',
+        category: omdbData.Genre?.split(',')[0] || 'Other',
+        status: 'active',
+        fundedPercentage: 0,
+        targetAmount: 1000000,
+        raisedAmount: 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        poster: omdbData.Poster,
+        description: omdbData.Plot,
+        director: omdbData.Director,
+        genre: omdbData.Genre,
+        tags: omdbData.Genre?.split(',').map((g: string) => g.trim()) || [],
+        perks: ['Behind-the-scenes', 'Signed Poster', 'Premiere Invite'],
+        rating: parseFloat(omdbData.imdbRating) || 0,
+        trailer: omdbData.trailer
+      };
+      return newProject;
+    });
+    if (omdbMode === 'replace') {
+      // Replace all projects
+      if (adminActions.deleteProject) {
+        adminProjects.forEach(p => adminActions.deleteProject!(p.id));
+      }
+      mapped.forEach(project => {
+        // Remove id, createdAt, updatedAt before passing to addProject
+        const { id, createdAt, updatedAt, ...rest } = project;
+        adminActions.addProject(rest);
+      });
+    } else {
+      mapped.forEach(project => {
+        const { id, createdAt, updatedAt, ...rest } = project;
+        adminActions.addProject(rest);
+      });
+    }
+    setOmdbResults([]);
+    setOmdbInput('');
+  };
+
   return (
     <div className="h-full flex flex-col">
+      {/* OMDB Fetcher Section */}
+      <div className="mb-8 p-4 rounded-xl border bg-gradient-to-r from-blue-50 to-purple-50 flex flex-col gap-3">
+        <h3 className="font-bold text-lg mb-2">OMDB Batch Fetcher</h3>
+        <div className="flex flex-wrap gap-2 items-center">
+          <textarea
+            value={omdbInput}
+            onChange={e => setOmdbInput(e.target.value)}
+            placeholder="Enter movie or series names, one per line"
+            className="px-3 py-2 border rounded w-96 h-24 resize-y"
+          />
+          <label className="flex items-center gap-1">
+            <input
+              type="radio"
+              checked={omdbMode === 'add'}
+              onChange={() => setOmdbMode('add')}
+            /> Add as new
+          </label>
+          <label className="flex items-center gap-1">
+            <input
+              type="radio"
+              checked={omdbMode === 'replace'}
+              onChange={() => setOmdbMode('replace')}
+            /> Replace all
+          </label>
+          <button
+            onClick={fetchOMDBBatch}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+            disabled={!omdbInput || omdbLoading}
+          >
+            {omdbLoading ? 'Fetching...' : 'Fetch All'}
+          </button>
+        </div>
+        {omdbError && <div className="text-red-500">{omdbError}</div>}
+        {omdbResults.length > 0 && (
+          <div className="mt-4">
+            <div className="font-semibold mb-2">Preview:</div>
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr>
+                    <th className="px-2 py-1">Title</th>
+                    <th className="px-2 py-1">Poster</th>
+                    <th className="px-2 py-1">Trailer</th>
+                    <th className="px-2 py-1">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {omdbResults.map((r, i) => (
+                    <tr key={i} className={r.error ? 'bg-red-50' : ''}>
+                      <td className="px-2 py-1">{r.Title || r.name}</td>
+                      <td className="px-2 py-1">{r.Poster ? <img src={r.Poster} alt={r.Title} className="w-12 h-16 object-cover rounded" /> : '-'}</td>
+                      <td className="px-2 py-1">{r.trailer ? <a href={r.trailer} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Trailer</a> : '-'}</td>
+                      <td className="px-2 py-1">{r.error ? <span className="text-red-500">{r.error}</span> : <span className="text-green-600">OK</span>}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <button
+              onClick={applyOMDBBatch}
+              className="mt-3 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+              disabled={omdbResults.filter(r => !r.error).length === 0}
+            >Apply</button>
+          </div>
+        )}
+      </div>
+
       {/* Header with actions */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div>

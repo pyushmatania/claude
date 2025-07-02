@@ -288,11 +288,6 @@ class ImageValidator {
 
   // Print validation summary
   private printSummary(results: ProjectImageUpdate[]) {
-    const valid = results.filter(r => r.isValid).length;
-    const invalid = results.filter(r => !r.isValid).length;
-    const alternatives = results.filter(r => r.source === 'alternative').length;
-    const fallbacks = results.filter(r => r.source === 'fallback').length;
-
     // List problematic projects
     const problematic = results.filter(r => !r.isValid || r.source === 'fallback');
     if (problematic.length > 0) {

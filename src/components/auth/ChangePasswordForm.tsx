@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, Lock, AlertCircle, CheckCircle, Loader, Check, X } from 'lucide-react';
+import { Eye, EyeOff, Lock, AlertCircle, Check, Loader, X } from 'lucide-react';
 import { useAuth } from './AuthProvider';
 import { useTheme } from '../ThemeProvider';
 import { useToast } from '../../hooks/useToast';

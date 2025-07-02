@@ -14,12 +14,6 @@ async function runImageValidation() {
     // Generate updated projects
     const updatedProjects = validator.generateUpdatedProjects(extendedProjects, results);
     
-    // Show final statistics
-    const stats = validator.getValidationStats();
-    
-    // Generate updated file content
-    const fileContent = generateUpdatedProjectFile(updatedProjects);
-    
     return updatedProjects;
     
   } catch (error) {

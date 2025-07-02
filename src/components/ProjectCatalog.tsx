@@ -1,10 +1,11 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PixelCard from './PixelCard';
-import { Film, Music, Tv, Search, Star, Clock, Users, TrendingUp, ChevronLeft, ChevronRight, Play, Plus, Info, Siren as Fire, Award, Globe, Filter, Grid3X3, List, SlidersHorizontal, X, Calendar, DollarSign, MapPin, Heart, Share2, Bookmark, ArrowRight, Eye } from 'lucide-react';
+import { Film, Music, Tv, Search, Star, Clock, TrendingUp, ChevronLeft, ChevronRight, Play, Plus, Info, Siren as Fire, Filter, Grid3X3, List, X, Heart, Share2, Bookmark, ArrowRight } from 'lucide-react';
 import { extendedProjects } from '../data/extendedProjects';
 import ProjectDetailModal from './ProjectDetailModal';
 import { Project } from '../types';
+import { useTheme } from './ThemeProvider';
 
 const ProjectCatalog: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -18,8 +19,8 @@ const ProjectCatalog: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
-  const autoSlideRef = useRef<NodeJS.Timeout | null>(null);
-  const pauseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const autoSlideRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pauseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   // Filter states
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -28,6 +29,8 @@ const ProjectCatalog: React.FC = () => {
   const [selectedGenre, setSelectedGenre] = useState<string>('all');
   const [fundingRange, setFundingRange] = useState<[number, number]>([0, 100]);
   const [sortBy, setSortBy] = useState<string>('trending');
+
+  const { theme } = useTheme();
 
   const handleProjectClick = (project: Project) => {
     setSelectedProject(project);
@@ -107,7 +110,7 @@ const ProjectCatalog: React.FC = () => {
     
     const matchesGenre = selectedGenre === 'all' || 
       project.genre.toLowerCase().includes(selectedGenre) ||
-      project.tags.some(tag => tag.toLowerCase().includes(selectedGenre));
+      project.tags.some((tag: string) => tag.toLowerCase().includes(selectedGenre));
     
     const matchesFunding = project.fundedPercentage >= fundingRange[0] && 
       project.fundedPercentage <= fundingRange[1];
@@ -282,7 +285,7 @@ const ProjectCatalog: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className={`min-h-screen ${theme === 'light' ? 'animated-gradient-light' : 'bg-black'}`}>
       {/* Full-Screen Auto-Sliding Hero Carousel */}
       {!searchTerm && !showAllProjects && (
         <div className="relative h-screen overflow-hidden">
@@ -309,16 +312,16 @@ const ProjectCatalog: React.FC = () => {
           {/* Navigation Arrows */}
           <button
             onClick={prevSlide}
-            className="absolute left-6 top-1/2 transform -translate-y-1/2 z-20 w-14 h-14 bg-black/60 hover:bg-black/80 rounded-full flex items-center justify-center text-white transition-all duration-300 hover:scale-110 backdrop-blur-sm"
+            className="absolute left-6 top-1/2 transform -translate-y-1/2 z-20 w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 bg-black/60 hover:bg-black/80 text-white"
           >
-            <ChevronLeft className="w-8 h-8" />
+            <ChevronLeft className="w-8 h-8 text-white" />
           </button>
           
           <button
             onClick={nextSlide}
-            className="absolute right-6 top-1/2 transform -translate-y-1/2 z-20 w-14 h-14 bg-black/60 hover:bg-black/80 rounded-full flex items-center justify-center text-white transition-all duration-300 hover:scale-110 backdrop-blur-sm"
+            className="absolute right-6 top-1/2 transform -translate-y-1/2 z-20 w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 bg-black/60 hover:bg-black/80 text-white"
           >
-            <ChevronRight className="w-8 h-8" />
+            <ChevronRight className="w-8 h-8 text-white" />
           </button>
 
           {/* Content Overlay */}
@@ -348,16 +351,16 @@ const ProjectCatalog: React.FC = () => {
                     </div>
                   </div>
 
-                  <h1 className="text-6xl md:text-7xl font-bold text-white mb-4">
+                  <h1 className="text-6xl md:text-7xl font-bold mb-4 text-white">
                     {featuredProjects[currentSlide]?.title}
                   </h1>
                   
-                  <p className="text-xl text-gray-300 mb-6 leading-relaxed">
+                  <p className="text-xl mb-6 leading-relaxed text-gray-300">
                     {featuredProjects[currentSlide]?.description}
                   </p>
 
                   <div className="flex items-center gap-4 mb-8">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 text-yellow-600">
                       <Star className="w-5 h-5 text-yellow-400 fill-current" />
                       <span className="text-white font-semibold">{featuredProjects[currentSlide]?.rating || '4.8'}</span>
                     </div>
@@ -366,7 +369,7 @@ const ProjectCatalog: React.FC = () => {
                     <span className="text-gray-400">•</span>
                     <span className="text-gray-300">{featuredProjects[currentSlide]?.genre}</span>
                     <span className="text-gray-400">•</span>
-                    <span className="text-green-400 font-semibold">{featuredProjects[currentSlide]?.fundedPercentage}% Funded</span>
+                    <span className="text-green-500 font-bold">{featuredProjects[currentSlide]?.fundedPercentage}% Funded</span>
                   </div>
 
                   <div className="flex items-center gap-4">
@@ -678,6 +681,7 @@ const ProjectCatalog: React.FC = () => {
                       project={project} 
                       onClick={() => handleProjectClick(project)}
                       compact={viewMode === 'grid'}
+                      theme={theme}
                     />
                   )
                 ))}
@@ -705,6 +709,7 @@ const ProjectCatalog: React.FC = () => {
               onProjectClick={handleProjectClick}
               onHeaderClick={() => handleSectionClick('trending')}
               featured
+              theme={theme}
             />
             
             {endingSoon.length > 0 && (
@@ -714,6 +719,7 @@ const ProjectCatalog: React.FC = () => {
                 onProjectClick={handleProjectClick}
                 onHeaderClick={() => handleSectionClick('ending-soon')}
                 urgent
+                theme={theme}
               />
             )}
             
@@ -722,6 +728,7 @@ const ProjectCatalog: React.FC = () => {
               projects={bollywoodFilms} 
               onProjectClick={handleProjectClick}
               onHeaderClick={() => handleSectionClick('bollywood')}
+              theme={theme}
             />
             
             <ProjectRow 
@@ -729,6 +736,7 @@ const ProjectCatalog: React.FC = () => {
               projects={musicProjects} 
               onProjectClick={handleProjectClick}
               onHeaderClick={() => handleSectionClick('music')}
+              theme={theme}
             />
             
             <ProjectRow 
@@ -736,6 +744,7 @@ const ProjectCatalog: React.FC = () => {
               projects={webSeries} 
               onProjectClick={handleProjectClick}
               onHeaderClick={() => handleSectionClick('webseries')}
+              theme={theme}
             />
             
             <ProjectRow 
@@ -743,6 +752,7 @@ const ProjectCatalog: React.FC = () => {
               projects={regionalContent} 
               onProjectClick={handleProjectClick}
               onHeaderClick={() => handleSectionClick('regional')}
+              theme={theme}
             />
             
             <ProjectRow 
@@ -750,6 +760,7 @@ const ProjectCatalog: React.FC = () => {
               projects={highRatedProjects} 
               onProjectClick={handleProjectClick}
               onHeaderClick={() => handleSectionClick('high-rated')}
+              theme={theme}
             />
             
             <ProjectRow 
@@ -757,6 +768,7 @@ const ProjectCatalog: React.FC = () => {
               projects={newReleases} 
               onProjectClick={handleProjectClick}
               onHeaderClick={() => handleSectionClick('new-releases')}
+              theme={theme}
             />
             
             {hollywoodProjects.length > 0 && (
@@ -765,6 +777,7 @@ const ProjectCatalog: React.FC = () => {
                 projects={hollywoodProjects} 
                 onProjectClick={handleProjectClick}
                 onHeaderClick={() => handleSectionClick('hollywood')}
+                theme={theme}
               />
             )}
           </div>
@@ -789,9 +802,10 @@ interface ProjectRowProps {
   onHeaderClick?: () => void;
   featured?: boolean;
   urgent?: boolean;
+  theme: 'light' | 'dark';
 }
 
-const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects, onProjectClick, onHeaderClick, featured, urgent }) => {
+const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects, onProjectClick, onHeaderClick, featured, urgent, theme }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const scroll = (direction: 'left' | 'right') => {
@@ -807,16 +821,16 @@ const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects, onProjectClick
   if (projects.length === 0) return null;
 
   return (
-    <div className="relative group">
+    <div className="relative group mb-8">
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={onHeaderClick}
-          className={`font-bold text-white hover:text-gray-300 transition-colors duration-300 flex items-center gap-3 group/header ${
+          className={`font-bold text-white hover:text-gray-300 transition-colors duration-300 flex items-center gap-3 ${
             featured ? 'text-3xl' : 'text-2xl'
           } ${urgent ? 'text-red-400 hover:text-red-300' : ''}`}
         >
           {title}
-          <ArrowRight className="w-6 h-6 opacity-0 group-hover/header:opacity-100 transition-opacity duration-300" />
+          <ArrowRight className="w-6 h-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </button>
         {urgent && (
           <div className="flex items-center gap-2 px-3 py-1 bg-red-600/20 border border-red-500/30 rounded-full">
@@ -844,17 +858,19 @@ const ProjectRow: React.FC<ProjectRowProps> = ({ title, projects, onProjectClick
       {/* Projects Scroll Container */}
       <div 
         ref={scrollRef}
-        className="flex gap-4 overflow-x-auto scrollbar-hide pb-4"
+        className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {projects.map((project, index) => (
-          <ProjectCard 
-            key={project.id} 
-            project={project} 
-            onClick={() => onProjectClick(project)}
-            featured={featured && index === 0}
-            urgent={urgent}
-          />
+          <div key={project.id} className="snap-start flex-shrink-0">
+            <ProjectCard 
+              project={project} 
+              onClick={() => onProjectClick(project)}
+              featured={featured && index === 0}
+              urgent={urgent}
+              theme={theme}
+            />
+          </div>
         ))}
       </div>
     </div>
@@ -868,13 +884,14 @@ interface ProjectCardProps {
   featured?: boolean;
   urgent?: boolean;
   compact?: boolean;
+  theme: 'light' | 'dark';
 }
 
-const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick, featured, urgent, compact }) => {
+const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick, featured, urgent, compact, theme }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  const cardWidth = featured ? 'w-96' : compact ? 'w-48' : 'w-72';
-  const aspectRatio = featured ? 'aspect-[16/10]' : 'aspect-[2/3]';
+  const cardWidth = featured ? 'w-80' : compact ? 'w-48' : 'w-72';
+  const aspectRatio = 'aspect-[2/3]'; // Use consistent aspect ratio for all cards
 
   return (
     <PixelCard variant="pink" className={`relative flex-shrink-0 ${cardWidth}`}> 
@@ -887,25 +904,25 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick, featured, u
         onClick={onClick}
       >
       <div className={`relative ${aspectRatio} rounded-xl overflow-hidden bg-gray-800 shadow-2xl`}>
-        {/* Main Poster Image with Blur Effect on Hover */}
+        {/* Main Poster Image */}
         <div className="relative w-full h-full">
           <img 
             src={project.poster} 
             alt={project.title}
             className={`w-full h-full object-cover transition-all duration-700 ${
-              isHovered ? 'scale-110 blur-sm brightness-50' : 'scale-100 blur-0 brightness-100'
+              isHovered ? 'scale-110 brightness-75' : 'scale-100 brightness-100'
             }`}
             loading="lazy"
           />
 
-          {/* Cinematic Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-60" />
+          {/* Subtle Overlay for Better Text Readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
           
           {/* Premium Glow Effect */}
           <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         </div>
         
-        {/* Top Badges */}
+        {/* Top Badges - Always Visible */}
         <div className="absolute top-3 left-3 flex flex-col gap-2 z-20">
           <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold backdrop-blur-md border ${
             project.type === 'film' ? 'bg-purple-500/80 border-purple-400/50 text-white shadow-lg shadow-purple-500/25' :
@@ -943,6 +960,22 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick, featured, u
           </div>
         )}
 
+        {/* Tags - Always Visible on Bottom */}
+        {!compact && project.tags && project.tags.length > 0 && (
+          <div className="absolute bottom-20 left-3 right-3 z-20">
+            <div className="flex flex-wrap gap-1">
+              {project.tags.slice(0, 2).map((tag: string, index: number) => (
+                <span 
+                  key={index}
+                  className="px-2 py-1 text-xs rounded-full bg-black/60 text-white backdrop-blur-sm border border-white/20"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Bottom Content - Always Visible */}
         <div className="absolute bottom-0 left-0 right-0 p-4 z-20">
           <div className="space-y-3">
@@ -960,10 +993,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick, featured, u
               )}
             </div>
 
-            {/* Progress Bar */}
+            {/* Progress Bar - Always Visible */}
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-gray-400">Funded</span>
+                <span className="text-gray-300">Funded</span>
                 <span className={`font-bold ${
                   project.fundedPercentage >= 75 ? 'text-green-400' : 
                   project.fundedPercentage >= 50 ? 'text-yellow-400' : 'text-gray-300'
@@ -990,7 +1023,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick, featured, u
             {/* Funding Details */}
             {!compact && (
               <div className="flex items-center justify-between text-xs">
-                <div className="text-gray-400">
+                <div className="text-gray-300">
                   ₹{(project.raisedAmount / 100000).toFixed(1)}L raised
                 </div>
                 {project.timeLeft && (
@@ -1004,7 +1037,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick, featured, u
           </div>
         </div>
 
-        {/* Hover Content - Enhanced with Better Readability */}
+        {/* Hover Content - Enhanced */}
         <AnimatePresence>
           {isHovered && !compact && (
             <motion.div
@@ -1023,12 +1056,12 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick, featured, u
                   </p>
                 </div>
 
-                {/* Tags */}
+                {/* Enhanced Tags on Hover */}
                 <div className="flex flex-wrap gap-1">
-                  {project.tags.slice(0, 3).map((tag, index) => (
+                  {project.tags.slice(0, 4).map((tag: string, index: number) => (
                     <span 
                       key={index}
-                      className="px-2 py-1 text-xs rounded-full bg-white/30 text-white backdrop-blur-md border border-white/20 font-medium"
+                      className="px-2 py-1 text-xs rounded-full bg-white/20 text-white backdrop-blur-sm"
                     >
                       {tag}
                     </span>

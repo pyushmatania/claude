@@ -7,16 +7,14 @@ import {
   Tv, 
   Star, 
   Clock, 
-  Users, 
   Play, 
   Plus, 
   Bookmark, 
   Heart,
   TrendingUp,
-  ArrowRight,
-  Award
-} from 'lucide-react';
+  ArrowRight} from 'lucide-react';
 import { Project } from '../types';
+import { useTheme } from './ThemeProvider';
 
 interface ProjectCardProps {
   project: Project;
@@ -32,11 +30,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   onClick, 
   featured, 
   urgent, 
-  compact,
-  layout = 'netflix'
-}) => {
+  compact}) => {
   const [isHovered, setIsHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const { theme } = useTheme();
 
   const cardWidth = featured ? 'w-96' : compact ? 'w-48' : 'w-72';
   // Fixed: Use consistent aspect ratio for all cards
@@ -55,7 +52,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         transition={{ duration: 0.3 }}
         onClick={onClick}
       >
-      <div className={`relative ${aspectRatio} rounded-xl overflow-hidden bg-gray-800 shadow-2xl`}>
+      <div className={`relative ${aspectRatio} rounded-xl overflow-hidden ${theme === 'light' ? 'bg-white/80 shadow-xl' : 'bg-gray-800 shadow-2xl'}`}>
         {/* Main Poster Image */}
         <div className="relative w-full h-full">
           <img 
@@ -75,9 +72,6 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             </div>
           )}
 
-          {/* Cinematic Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-60" />
-          
           {/* Premium Glow Effect */}
           <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         </div>
@@ -85,9 +79,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         {/* Top Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-2 z-20">
           <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold backdrop-blur-md border ${
-            project.type === 'film' ? 'bg-purple-500/80 border-purple-400/50 text-white shadow-lg shadow-purple-500/25' :
-            project.type === 'music' ? 'bg-blue-500/80 border-blue-400/50 text-white shadow-lg shadow-blue-500/25' :
-            'bg-green-500/80 border-green-400/50 text-white shadow-lg shadow-green-500/25'
+            theme === 'light'
+              ? 'bg-white/80 border-gray-300 text-gray-900 shadow-lg'
+              : project.type === 'film' ? 'bg-purple-500/80 border-purple-400/50 text-white shadow-lg shadow-purple-500/25'
+              : project.type === 'music' ? 'bg-blue-500/80 border-blue-400/50 text-white shadow-lg shadow-blue-500/25'
+              : 'bg-green-500/80 border-green-400/50 text-white shadow-lg shadow-green-500/25'
           }`}>
             {project.type === 'film' ? <Film className="w-3 h-3" /> :
              project.type === 'music' ? <Music className="w-3 h-3" /> :
@@ -96,14 +92,14 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           </div>
           
           {featured && (
-            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 text-black text-xs font-bold shadow-lg">
+            <div className={`flex items-center gap-1 px-2 py-1 rounded-full bg-gradient-to-r from-yellow-400 to-orange-400 text-xs font-bold shadow-lg text-black`}>
               <TrendingUp className="w-3 h-3" />
               {!compact && 'TRENDING'}
             </div>
           )}
           
           {urgent && (
-            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold shadow-lg animate-pulse">
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-gradient-to-r from-pink-400 to-red-400 text-xs font-bold shadow-lg animate-pulse text-white">
               <Clock className="w-3 h-3" />
               {!compact && 'ENDING SOON'}
             </div>
@@ -113,7 +109,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         {/* Top Right - Rating */}
         {project.rating && (
           <div className="absolute top-3 right-3 z-20">
-            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/70 backdrop-blur-md text-white text-xs font-semibold border border-yellow-400/30">
+            <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold border bg-black/70 backdrop-blur-md text-white border-yellow-400/30`}>
               <Star className="w-3 h-3 text-yellow-400 fill-current" />
               {project.rating}
             </div>
@@ -121,17 +117,15 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         )}
 
         {/* Bottom Content - Always Visible */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 z-20">
+        <div className={`absolute bottom-0 left-0 right-0 p-4 z-20`}>
           <div className="space-y-3">
             {/* Title and Basic Info */}
             <div>
-              <h3 className={`text-white font-bold leading-tight ${
-                compact ? 'text-sm' : featured ? 'text-xl' : 'text-lg'
-              }`}>
+              <h3 className={`font-bold leading-tight ${compact ? 'text-sm' : featured ? 'text-xl' : 'text-lg'} text-white`}>
                 {project.title}
               </h3>
               {!compact && (
-                <p className="text-gray-300 text-sm mt-1 line-clamp-2">
+                <p className="text-sm mt-1 line-clamp-2 text-white">
                   {project.description}
                 </p>
               )}
@@ -140,15 +134,15 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             {/* Progress Bar */}
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-gray-400">Funded</span>
+                <span className="text-white">Funded</span>
                 <span className={`font-bold ${
-                  project.fundedPercentage >= 75 ? 'text-green-400' : 
-                  project.fundedPercentage >= 50 ? 'text-yellow-400' : 'text-gray-300'
+                  project.fundedPercentage >= 75 ? 'text-green-500' : 
+                  project.fundedPercentage >= 50 ? 'text-yellow-400' : 'text-white'
                 }`}>
                   {project.fundedPercentage}%
                 </span>
               </div>
-              <div className="w-full bg-gray-700/50 rounded-full h-2 overflow-hidden backdrop-blur-sm">
+              <div className={`w-full rounded-full h-2 overflow-hidden backdrop-blur-sm ${theme === 'light' ? 'bg-gray-300/60' : 'bg-gray-700/50'}`}>
                 <motion.div 
                   initial={{ width: 0 }}
                   animate={{ width: `${project.fundedPercentage}%` }}
@@ -167,11 +161,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             {/* Funding Details */}
             {!compact && (
               <div className="flex items-center justify-between text-xs">
-                <div className="text-gray-400">
+                <div className="text-white">
                   ₹{(project.raisedAmount / 100000).toFixed(1)}L raised
                 </div>
                 {project.timeLeft && (
-                  <div className="flex items-center gap-1 text-orange-400 font-medium">
+                  <div className="flex items-center gap-1 font-medium text-orange-400">
                     <Clock className="w-3 h-3" />
                     {project.timeLeft}
                   </div>
@@ -189,13 +183,13 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
               transition={{ duration: 0.3 }}
-              className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent flex flex-col justify-end p-4 z-30"
+              className={`absolute inset-0 flex flex-col justify-end p-4 z-30`}
             >
               <div className="space-y-4">
                 {/* Enhanced Title and Info */}
                 <div>
                   <h3 className="text-white font-bold text-xl mb-2">{project.title}</h3>
-                  <p className="text-gray-300 text-sm leading-relaxed line-clamp-3">
+                  <p className="text-white text-sm leading-relaxed line-clamp-3">
                     {project.description}
                   </p>
                 </div>

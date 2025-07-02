@@ -28,7 +28,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
           onClick={onClose}
           className={`absolute inset-0 ${
             theme === 'light' 
-              ? 'bg-white/80 backdrop-blur-sm' 
+              ? 'bg-[#ffe4ec]/80 backdrop-blur-sm' 
               : 'bg-black/80 backdrop-blur-sm'
           }`}
         />
@@ -51,7 +51,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
               onClick={onClose}
               className={`absolute top-4 right-4 p-2 rounded-full transition-colors z-10 ${
                 theme === 'light'
-                  ? 'bg-white/50 text-gray-700 hover:bg-white/70'
+                  ? 'bg-[#ffe4ec]/50 text-gray-700 hover:bg-[#ffe4ec]/70'
                   : 'bg-black/50 text-white hover:bg-black/70'
               }`}
             >

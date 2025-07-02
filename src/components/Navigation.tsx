@@ -5,6 +5,8 @@ import { useTheme } from './ThemeProvider';
 import { useAuth } from './auth/AuthProvider';
 import SearchBar from './SearchBar';
 import NotificationDropdown from './NotificationDropdown';
+import ProjectDetailModal from './ProjectDetailModal';
+import { Project } from '../types';
 
 interface NavigationProps {
   currentView: 'home' | 'dashboard' | 'projects' | 'community' | 'merch' | 'profile' | 'admin' | 'portfolio' | 'compare' | 'news' | 'notifications' | 'search';
@@ -19,6 +21,8 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, setCurrentView, on
   const [showUserMenu, setShowUserMenu] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { user, isAuthenticated, logout } = useAuth();
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 
   const mainNavItems = [
     { id: 'home', label: 'Home', icon: Home },
@@ -214,8 +218,8 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, setCurrentView, on
                   <div className="relative">
                     <SearchBar 
                       onSelectProject={(project) => {
-                        // Handle project selection
-                        console.log('Selected project:', project);
+                        setSelectedProject(project);
+                        setIsProjectModalOpen(true);
                       }}
                       onViewAllResults={() => {
                         setCurrentView('search');
@@ -682,6 +686,12 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, setCurrentView, on
           </motion.div>
         )}
       </AnimatePresence>
+
+      <ProjectDetailModal 
+        project={selectedProject}
+        isOpen={isProjectModalOpen}
+        onClose={() => setIsProjectModalOpen(false)}
+      />
     </>
   );
 };
