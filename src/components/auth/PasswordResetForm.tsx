@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Mail, AlertCircle, CheckCircle, Loader, ArrowLeft } from 'lucide-react';
 import { useAuth } from './AuthProvider';
 import { useTheme } from '../ThemeProvider';
+import { useToast } from '../../hooks/useToast';
 
 interface PasswordResetFormProps {
   onBack: () => void;
@@ -16,6 +17,7 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ onBack }) => {
 
   const { resetPassword } = useAuth();
   const { theme } = useTheme();
+  const { toast } = useToast();
 
   const validateEmail = () => {
     if (!email) {
@@ -37,8 +39,9 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ onBack }) => {
     try {
       await resetPassword(email);
       setIsSubmitted(true);
+      toast.success('Password reset link sent!');
     } catch (error) {
-      setError('Failed to send reset email. Please try again.');
+      toast.error('Failed to send reset email. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

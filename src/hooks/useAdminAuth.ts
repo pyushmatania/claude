@@ -35,7 +35,6 @@ export const useAdminAuth = () => {
         }
       } catch (err) {
         setError('Authentication failed');
-        console.error('Auth check failed:', err);
       } finally {
         setIsLoading(false);
       }

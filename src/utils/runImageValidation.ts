@@ -5,10 +5,6 @@ import ImageValidator from './imageValidator';
 
 // Run the validation process
 async function runImageValidation() {
-  console.log('🎬 CIRCLES PROJECT IMAGE VALIDATION SYSTEM');
-  console.log('==========================================');
-  console.log(`Starting validation of ${extendedProjects.length} projects...`);
-  
   const validator = new ImageValidator();
   
   try {
@@ -20,25 +16,13 @@ async function runImageValidation() {
     
     // Show final statistics
     const stats = validator.getValidationStats();
-    console.log('\n📈 FINAL STATISTICS:');
-    console.log(`Total Projects: ${stats.totalValidated}`);
-    console.log(`Valid Originals: ${stats.validOriginals}`);
-    console.log(`Found Alternatives: ${stats.foundAlternatives}`);
-    console.log(`Using Fallbacks: ${stats.usingFallbacks}`);
-    console.log(`Cache Entries: ${stats.cacheSize}`);
     
     // Generate updated file content
     const fileContent = generateUpdatedProjectFile(updatedProjects);
-    console.log('\n📄 Updated project file generated successfully!');
-    console.log('Copy the content below to update your extendedProjects.ts file:');
-    console.log('\n' + '='.repeat(80));
-    console.log(fileContent);
-    console.log('='.repeat(80));
     
     return updatedProjects;
     
   } catch (error) {
-    console.error('❌ Validation failed:', error);
     throw error;
   }
 }

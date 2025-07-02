@@ -19,6 +19,7 @@ import { useAdmin, Perk } from '../AdminContext';
 import PerkForm from '../forms/PerkForm';
 import ConfirmDialog from '../shared/ConfirmDialog';
 import DataTable from '../shared/DataTable';
+import { Column } from 'react-table';
 
 const PerksPanel: React.FC = () => {
   const { theme } = useTheme();

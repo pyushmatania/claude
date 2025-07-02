@@ -146,8 +146,6 @@ class ImageValidator {
 
     for (attempts = 1; attempts <= maxAttempts; attempts++) {
       try {
-        console.log(`Attempt ${attempts}/${maxAttempts} - Checking: ${url}`);
-        
         await fetch(url, {
           method: 'HEAD',
           mode: 'no-cors' // Handle CORS issues
@@ -156,14 +154,10 @@ class ImageValidator {
         // For no-cors mode, we can't check status, so we assume it's valid if no error
         isValid = true;
         finalUrl = url;
-        console.log(`✅ Valid image found on attempt ${attempts}: ${url}`);
         break;
         
       } catch (error) {
-        console.log(`❌ Attempt ${attempts} failed for ${url}:`, error);
-        
         if (attempts === maxAttempts) {
-          console.log(`🔄 All ${maxAttempts} attempts failed for ${url}`);
           isValid = false;
         } else {
           // Wait before next attempt
@@ -189,9 +183,8 @@ class ImageValidator {
     const key = this.titleToKey(projectTitle);
     
     // First, check our verified posters
-    if (verifiedPosters[key]) {
-      console.log(`🎯 Found verified poster for ${projectTitle}: ${verifiedPosters[key]}`);
-      return verifiedPosters[key];
+    if (Object.prototype.hasOwnProperty.call(verifiedPosters, key)) {
+      return verifiedPosters[key as keyof typeof verifiedPosters];
     }
 
     // Get backup images based on project type
@@ -215,33 +208,25 @@ class ImageValidator {
     for (const backupUrl of backupSources) {
       const validation = await this.validateImageUrl(backupUrl, 3);
       if (validation.isValid) {
-        console.log(`🔄 Found working backup for ${projectTitle}: ${backupUrl}`);
         return backupUrl;
       }
     }
 
-    console.log(`❌ No alternative found for ${projectTitle}`);
     return null;
   }
 
   // Validate and update a single project
   async validateProject(project: Project): Promise<ProjectImageUpdate> {
-    console.log(`\n🔍 Validating project: ${project.title}`);
-    console.log(`Original URL: ${project.poster}`);
-
     const validation = await this.validateImageUrl(project.poster);
     
     let newUrl = project.poster;
     let source = 'original';
 
     if (!validation.isValid) {
-      console.log(`❌ Original poster failed for ${project.title}, searching alternatives...`);
-      
       const alternative = await this.findAlternativeImage(project.title, project.type);
       if (alternative) {
         newUrl = alternative;
         source = 'alternative';
-        console.log(`✅ Found alternative for ${project.title}: ${alternative}`);
       } else {
         // Use a high-quality fallback based on project type
         const fallbacks = {
@@ -251,10 +236,7 @@ class ImageValidator {
         };
         newUrl = fallbacks[project.type] || fallbacks.film;
         source = 'fallback';
-        console.log(`⚠️ Using fallback for ${project.title}: ${newUrl}`);
       }
-    } else {
-      console.log(`✅ Original poster is valid for ${project.title}`);
     }
 
     const result: ProjectImageUpdate = {
@@ -272,14 +254,10 @@ class ImageValidator {
 
   // Validate all projects
   async validateAllProjects(projects: Project[]): Promise<ProjectImageUpdate[]> {
-    console.log(`\n🚀 Starting validation of ${projects.length} projects...`);
-    console.log('=' * 60);
-
     const results: ProjectImageUpdate[] = [];
 
     for (let i = 0; i < projects.length; i++) {
       const project = projects[i];
-      console.log(`\n📋 Progress: ${i + 1}/${projects.length}`);
       
       try {
         const result = await this.validateProject(project);
@@ -291,8 +269,6 @@ class ImageValidator {
         }
         
       } catch (error) {
-        console.error(`❌ Error validating ${project.title}:`, error);
-        
         // Add failed result
         results.push({
           id: project.id,
@@ -305,8 +281,6 @@ class ImageValidator {
       }
     }
 
-    console.log('\n' + '=' * 60);
-    console.log('🎉 Validation completed!');
     this.printSummary(results);
     
     return results;
@@ -319,19 +293,10 @@ class ImageValidator {
     const alternatives = results.filter(r => r.source === 'alternative').length;
     const fallbacks = results.filter(r => r.source === 'fallback').length;
 
-    console.log('\n📊 VALIDATION SUMMARY:');
-    console.log(`✅ Valid original posters: ${valid}`);
-    console.log(`❌ Invalid original posters: ${invalid}`);
-    console.log(`🔄 Found alternatives: ${alternatives}`);
-    console.log(`⚠️ Using fallbacks: ${fallbacks}`);
-    console.log(`📈 Success rate: ${((valid + alternatives) / results.length * 100).toFixed(1)}%`);
-
     // List problematic projects
     const problematic = results.filter(r => !r.isValid || r.source === 'fallback');
     if (problematic.length > 0) {
-      console.log('\n⚠️ PROJECTS NEEDING ATTENTION:');
       problematic.forEach(p => {
-        console.log(`- ${p.title} (${p.source})`);
       });
     }
   }

@@ -17,10 +17,13 @@ import { useTheme } from '../../ThemeProvider';
 import { useAdmin, User } from '../AdminContext';
 import ConfirmDialog from '../shared/ConfirmDialog';
 import DataTable from '../shared/DataTable';
+import { Column } from 'react-table';
+import { useToast } from '../../../hooks/useToast';
 
 const UsersPanel: React.FC = () => {
   const { theme } = useTheme();
   const { users, updateUserStatus } = useAdmin();
+  const { toast } = useToast();
   
   const [userToActivate, setUserToActivate] = useState<string | null>(null);
   const [userToDeactivate, setUserToDeactivate] = useState<string | null>(null);
@@ -29,8 +32,13 @@ const UsersPanel: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterRole, setFilterRole] = useState<string>('all');
-  const [sortField, setSortField] = useState<keyof User>('createdAt');
+  const [sortField, setSortField] = useState<string>('createdAt');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+
+  // Type-safe valid sort fields
+  const validSortFields: (keyof User)[] = [
+    'createdAt', 'name', 'email', 'role', 'status', 'investmentCount', 'totalInvested'
+  ];
 
   // Filter and sort users
   const filteredUsers = useMemo(() => {
@@ -49,28 +57,27 @@ const UsersPanel: React.FC = () => {
         return matchesSearch && matchesStatus && matchesRole;
       })
       .sort((a, b) => {
-        // Handle date fields
-        if (sortField === 'createdAt') {
+        if (validSortFields.includes(sortField as keyof User)) {
+          const key = sortField as keyof User;
+          if (key === 'createdAt') {
+            return sortDirection === 'asc'
+              ? new Date(a[key] as string).getTime() - new Date(b[key] as string).getTime()
+              : new Date(b[key] as string).getTime() - new Date(a[key] as string).getTime();
+          }
+          if (typeof a[key] === 'number' && typeof b[key] === 'number') {
+            return sortDirection === 'asc'
+              ? (a[key] as number) - (b[key] as number)
+              : (b[key] as number) - (a[key] as number);
+          }
           return sortDirection === 'asc'
-            ? new Date(a[sortField]).getTime() - new Date(b[sortField]).getTime()
-            : new Date(b[sortField]).getTime() - new Date(a[sortField]).getTime();
+            ? String(a[key]).localeCompare(String(b[key]))
+            : String(b[key]).localeCompare(String(a[key]));
         }
-        
-        // Handle numeric fields
-        if (typeof a[sortField] === 'number' && typeof b[sortField] === 'number') {
-          return sortDirection === 'asc'
-            ? (a[sortField] as number) - (b[sortField] as number)
-            : (b[sortField] as number) - (a[sortField] as number);
-        }
-        
-        // Handle string fields
-        return sortDirection === 'asc'
-          ? String(a[sortField]).localeCompare(String(b[sortField]))
-          : String(b[sortField]).localeCompare(String(a[sortField]));
+        return 0;
       });
   }, [users, searchTerm, filterStatus, filterRole, sortField, sortDirection]);
 
-  const handleSort = (field: keyof User) => {
+  const handleSort = (field: string) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
@@ -81,21 +88,36 @@ const UsersPanel: React.FC = () => {
 
   const handleActivateConfirm = () => {
     if (userToActivate) {
-      updateUserStatus(userToActivate, 'active');
+      try {
+        updateUserStatus(userToActivate, 'active');
+        toast.success('User activated');
+      } catch (error) {
+        toast.error('Error activating user', error instanceof Error ? error.message : 'An unexpected error occurred');
+      }
       setUserToActivate(null);
     }
   };
 
   const handleDeactivateConfirm = () => {
     if (userToDeactivate) {
-      updateUserStatus(userToDeactivate, 'inactive');
+      try {
+        updateUserStatus(userToDeactivate, 'inactive');
+        toast.success('User deactivated');
+      } catch (error) {
+        toast.error('Error deactivating user', error instanceof Error ? error.message : 'An unexpected error occurred');
+      }
       setUserToDeactivate(null);
     }
   };
 
   const handleBanConfirm = () => {
     if (userToBan) {
-      updateUserStatus(userToBan, 'banned');
+      try {
+        updateUserStatus(userToBan, 'banned');
+        toast.success('User banned');
+      } catch (error) {
+        toast.error('Error banning user', error instanceof Error ? error.message : 'An unexpected error occurred');
+      }
       setUserToBan(null);
     }
   };
@@ -113,11 +135,11 @@ const UsersPanel: React.FC = () => {
     }
   };
 
-  const columns = [
+  const columns: Column<User>[] = [
     {
       Header: 'User',
       accessor: 'name',
-      Cell: ({ row }: any) => (
+      Cell: ({ row }) => (
         <div>
           <p className={`font-medium ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
             {row.original.name}
@@ -134,7 +156,7 @@ const UsersPanel: React.FC = () => {
     {
       Header: 'Role',
       accessor: 'role',
-      Cell: ({ value }: any) => (
+      Cell: ({ value }) => (
         <span className={`capitalize px-2 py-1 rounded-full text-xs ${
           value === 'admin' 
             ? theme === 'light' ? 'bg-purple-100 text-purple-700' : 'bg-purple-900/30 text-purple-400'
@@ -147,7 +169,7 @@ const UsersPanel: React.FC = () => {
     {
       Header: 'Status',
       accessor: 'status',
-      Cell: ({ value }: any) => (
+      Cell: ({ value }) => (
         <div className="flex items-center gap-2">
           {getStatusIcon(value)}
           <span className={`capitalize ${
@@ -163,7 +185,7 @@ const UsersPanel: React.FC = () => {
     {
       Header: 'Investments',
       accessor: 'investmentCount',
-      Cell: ({ row }: any) => (
+      Cell: ({ row }) => (
         <div>
           <div className="flex items-center gap-2">
             <TrendingUp className={`w-4 h-4 ${theme === 'light' ? 'text-gray-500' : 'text-gray-400'}`} />
@@ -183,7 +205,7 @@ const UsersPanel: React.FC = () => {
     {
       Header: 'Joined',
       accessor: 'createdAt',
-      Cell: ({ value }: any) => (
+      Cell: ({ value }) => (
         <div className="flex items-center gap-2">
           <Calendar className={`w-4 h-4 ${theme === 'light' ? 'text-gray-500' : 'text-gray-400'}`} />
           <span className={theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>
@@ -194,7 +216,7 @@ const UsersPanel: React.FC = () => {
     },
     {
       Header: 'Actions',
-      Cell: ({ row }: any) => (
+      Cell: ({ row }) => (
         <div className="flex items-center gap-2">
           {row.original.status !== 'active' && (
             <button

@@ -55,16 +55,11 @@ const projectMappings = {
  * Update all project images
  */
 async function updateAllProjectImages() {
-  console.log('Starting image update process...');
-  
   const updatedProjects = [];
   
   for (const project of extendedProjects) {
-    console.log(`Processing: ${project.title}`);
-    
     const mapping = projectMappings[project.title];
     if (!mapping) {
-      console.log(`No mapping found for ${project.title}, skipping...`);
       updatedProjects.push(project);
       continue;
     }
@@ -86,7 +81,6 @@ async function updateAllProjectImages() {
       }
       
       if (imageData && imageData.url) {
-        console.log(`✅ Found image for ${project.title}: ${imageData.url}`);
         updatedProjects.push({
           ...project,
           poster: imageData.url,
@@ -94,7 +88,6 @@ async function updateAllProjectImages() {
           imageCopyright: imageData.copyright
         });
       } else {
-        console.log(`❌ No image found for ${project.title}`);
         updatedProjects.push(project);
       }
       
@@ -102,13 +95,9 @@ async function updateAllProjectImages() {
       await imageManager.delay(200);
       
     } catch (error) {
-      console.error(`Error processing ${project.title}:`, error);
       updatedProjects.push(project);
     }
   }
-  
-  console.log('Image update process completed!');
-  console.log(`Updated ${updatedProjects.filter(p => p.imageAttribution).length} out of ${extendedProjects.length} projects`);
   
   return updatedProjects;
 }
@@ -128,9 +117,6 @@ async function generateUpdatedProjectFile() {
 export const extendedProjects: Project[] = ${JSON.stringify(updatedProjects, null, 2)};
 `;
 
-  console.log('\n--- Updated Project File Content ---');
-  console.log(fileContent);
-  
   return fileContent;
 }
 

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { X, Upload, Loader } from 'lucide-react';
 import { useTheme } from '../../ThemeProvider';
 import { useAdmin, MerchandiseItem } from '../AdminContext';
+import { useToast } from '../../../hooks/useToast';
 
 interface MerchandiseFormProps {
   item: MerchandiseItem | null;
@@ -13,6 +14,7 @@ interface MerchandiseFormProps {
 const MerchandiseForm: React.FC<MerchandiseFormProps> = ({ item, isOpen, onClose }) => {
   const { theme } = useTheme();
   const { addMerchandiseItem, updateMerchandiseItem } = useAdmin();
+  const { toast } = useToast();
   
   const [formData, setFormData] = useState<Omit<MerchandiseItem, 'id' | 'createdAt'>>({
     title: '',
@@ -139,7 +141,7 @@ const MerchandiseForm: React.FC<MerchandiseFormProps> = ({ item, isOpen, onClose
       
       onClose();
     } catch (error) {
-      console.error('Error saving merchandise item:', error);
+      toast.error('Error saving merchandise item', error instanceof Error ? error.message : 'An unexpected error occurred');
     } finally {
       setIsSubmitting(false);
     }

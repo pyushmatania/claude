@@ -1,25 +1,32 @@
-import React from 'react';
-import { useTable, usePagination, useSortBy } from 'react-table';
+import { useTable, usePagination, useSortBy, Column, HeaderGroup, Row, Cell, TableInstance, UsePaginationInstanceProps } from 'react-table';
 import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { useTheme } from '../../ThemeProvider';
 
-interface DataTableProps {
-  columns: any[];
-  data: any[];
+interface DataTableProps<T extends object> {
+  columns: Column<T>[];
+  data: T[];
   onSort?: (field: string) => void;
   sortField?: string;
   sortDirection?: 'asc' | 'desc';
 }
 
-const DataTable: React.FC<DataTableProps> = ({ 
-  columns, 
+const DataTable = <T extends object>({
+  columns,
   data,
   onSort,
   sortField,
   sortDirection
-}) => {
+}: DataTableProps<T>) => {
   const { theme } = useTheme();
   
+  const tableInstance = useTable<T>(
+    {
+      columns,
+      data
+    },
+    useSortBy,
+    usePagination
+  );
   const {
     getTableProps,
     getTableBodyProps,
@@ -28,26 +35,18 @@ const DataTable: React.FC<DataTableProps> = ({
     page,
     canPreviousPage,
     canNextPage,
-    pageOptions,
     pageCount,
     gotoPage,
     nextPage,
     previousPage,
-    setPageSize,
-    state: { pageIndex, pageSize }
-  } = useTable(
-    {
-      columns,
-      data,
-      initialState: { pageIndex: 0, pageSize: 10 },
-      manualSortBy: !!onSort,
-      disableSortBy: !onSort
-    },
-    useSortBy,
-    usePagination
-  );
+    state
+  } = tableInstance as TableInstance<T> & UsePaginationInstanceProps<T>;
 
-  const handleSort = (column: any) => {
+  // Extract pageIndex and pageSize from state.pagination if available
+  const pageIndex = (state as any).pagination?.pageIndex ?? 0;
+  const pageSize = (state as any).pagination?.pageSize ?? 10;
+
+  const handleSort = (column: HeaderGroup<T>) => {
     if (onSort && column.id) {
       onSort(column.id);
     }
@@ -93,7 +92,7 @@ const DataTable: React.FC<DataTableProps> = ({
               theme === 'light' ? 'bg-white divide-y divide-gray-200' : 'divide-y divide-gray-700'
             }`}
           >
-            {page.map((row, i) => {
+            {page.map((row: Row<T>) => {
               prepareRow(row);
               return (
                 <tr 
@@ -104,7 +103,7 @@ const DataTable: React.FC<DataTableProps> = ({
                       : 'hover:bg-gray-700'
                   }`}
                 >
-                  {row.cells.map(cell => {
+                  {row.cells.map((cell: Cell<T>) => {
                     return (
                       <td
                         {...cell.getCellProps()}

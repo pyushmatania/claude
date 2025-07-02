@@ -24,6 +24,7 @@ import { useAdmin, Project } from '../AdminContext';
 import ProjectForm from '../forms/ProjectForm';
 import ConfirmDialog from '../shared/ConfirmDialog';
 import DataTable from '../shared/DataTable';
+import { Column } from 'react-table';
 
 const ProjectsPanel: React.FC = () => {
   const { theme } = useTheme();
@@ -38,8 +39,13 @@ const ProjectsPanel: React.FC = () => {
   const [filterType, setFilterType] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterCategory, setFilterCategory] = useState<string>('all');
-  const [sortField, setSortField] = useState<keyof Project>('createdAt');
+  const [sortField, setSortField] = useState<string>('createdAt');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+
+  // Define valid sort fields for type safety
+  const validSortFields: (keyof Project)[] = [
+    'createdAt', 'updatedAt', 'title', 'type', 'category', 'status', 'fundedPercentage', 'targetAmount', 'raisedAmount'
+  ];
 
   // Filter and sort projects
   const filteredProjects = useMemo(() => {
@@ -60,24 +66,27 @@ const ProjectsPanel: React.FC = () => {
         return matchesSearch && matchesType && matchesStatus && matchesCategory;
       })
       .sort((a, b) => {
-        // Handle date fields
-        if (sortField === 'createdAt' || sortField === 'updatedAt') {
+        if (validSortFields.includes(sortField as keyof Project)) {
+          const key = sortField as keyof Project;
+          // Handle date fields
+          if (key === 'createdAt' || key === 'updatedAt') {
+            return sortDirection === 'asc'
+              ? new Date(a[key] as string).getTime() - new Date(b[key] as string).getTime()
+              : new Date(b[key] as string).getTime() - new Date(a[key] as string).getTime();
+          }
+          // Handle numeric fields
+          if (typeof a[key] === 'number' && typeof b[key] === 'number') {
+            return sortDirection === 'asc'
+              ? (a[key] as number) - (b[key] as number)
+              : (b[key] as number) - (a[key] as number);
+          }
+          // Handle string fields
           return sortDirection === 'asc'
-            ? new Date(a[sortField]).getTime() - new Date(b[sortField]).getTime()
-            : new Date(b[sortField]).getTime() - new Date(a[sortField]).getTime();
+            ? String(a[key]).localeCompare(String(b[key]))
+            : String(b[key]).localeCompare(String(a[key]));
         }
-        
-        // Handle numeric fields
-        if (typeof a[sortField] === 'number' && typeof b[sortField] === 'number') {
-          return sortDirection === 'asc'
-            ? (a[sortField] as number) - (b[sortField] as number)
-            : (b[sortField] as number) - (a[sortField] as number);
-        }
-        
-        // Handle string fields
-        return sortDirection === 'asc'
-          ? String(a[sortField]).localeCompare(String(b[sortField]))
-          : String(b[sortField]).localeCompare(String(a[sortField]));
+        // If not a valid key, do not sort
+        return 0;
       });
   }, [projects, searchTerm, filterType, filterStatus, filterCategory, sortField, sortDirection]);
 
@@ -87,7 +96,7 @@ const ProjectsPanel: React.FC = () => {
     return Array.from(uniqueCategories);
   }, [projects]);
 
-  const handleSort = (field: keyof Project) => {
+  const handleSort = (field: string) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
@@ -138,11 +147,11 @@ const ProjectsPanel: React.FC = () => {
     }
   };
 
-  const columns = [
+  const columns: Column<Project>[] = [
     {
       Header: 'Title',
       accessor: 'title',
-      Cell: ({ row }: any) => (
+      Cell: ({ row }) => (
         <div className="flex items-center gap-3">
           {row.original.poster ? (
             <img 
@@ -179,7 +188,7 @@ const ProjectsPanel: React.FC = () => {
     {
       Header: 'Status',
       accessor: 'status',
-      Cell: ({ value }: any) => (
+      Cell: ({ value }) => (
         <div className="flex items-center gap-2">
           {getStatusIcon(value)}
           <span className={`capitalize ${
@@ -196,32 +205,21 @@ const ProjectsPanel: React.FC = () => {
     {
       Header: 'Funding',
       accessor: 'fundedPercentage',
-      Cell: ({ row }: any) => (
+      Cell: ({ row }) => (
         <div>
-          <div className="flex items-center justify-between mb-1">
-            <span className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
-              {row.original.fundedPercentage}%
-            </span>
-            <span className={`text-xs ${theme === 'light' ? 'text-gray-500' : 'text-gray-500'}`}>
-              ₹{(row.original.raisedAmount / 100000).toFixed(1)}L / ₹{(row.original.targetAmount / 100000).toFixed(1)}L
-            </span>
-          </div>
-          <div className={`w-full h-2 rounded-full ${theme === 'light' ? 'bg-gray-200' : 'bg-gray-700'}`}>
-            <div 
-              className={`h-2 rounded-full ${
-                row.original.type === 'film' ? 'bg-purple-500' :
-                row.original.type === 'music' ? 'bg-blue-500' : 'bg-green-500'
-              }`}
-              style={{ width: `${row.original.fundedPercentage}%` }}
-            />
-          </div>
+          <span className="font-semibold">
+            {row.original.fundedPercentage}%
+          </span>
+          <span className="ml-2 text-xs text-gray-400">
+            of ₹{row.original.targetAmount.toLocaleString()}
+          </span>
         </div>
       )
     },
     {
       Header: 'Created',
       accessor: 'createdAt',
-      Cell: ({ value }: any) => (
+      Cell: ({ value }) => (
         <span className={theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>
           {new Date(value).toLocaleDateString()}
         </span>
@@ -230,7 +228,7 @@ const ProjectsPanel: React.FC = () => {
     {
       Header: 'Updated',
       accessor: 'updatedAt',
-      Cell: ({ value }: any) => (
+      Cell: ({ value }) => (
         <span className={theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>
           {new Date(value).toLocaleDateString()}
         </span>
@@ -238,7 +236,7 @@ const ProjectsPanel: React.FC = () => {
     },
     {
       Header: 'Actions',
-      Cell: ({ row }: any) => (
+      Cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <button
             onClick={() => setEditingProject(row.original)}
