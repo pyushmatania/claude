@@ -5,10 +5,7 @@ import {
   DollarSign, 
   Award, 
   Users, 
-  Film, 
-  Music, 
-  Star, 
-  Calendar,
+  Film,
   Gift,
   Crown,
   Ticket,
@@ -209,7 +206,7 @@ const Dashboard: React.FC = () => {
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
+              onClick={() => setActiveTab(tab.id as 'overview' | 'investments' | 'perks' | 'circles' | 'portfolio')}
               className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
                 activeTab === tab.id
                   ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-lg'
@@ -350,7 +347,7 @@ const Dashboard: React.FC = () => {
             transition={{ duration: 0.6 }}
             className="space-y-6"
           >
-            {investments.map((investment, index) => (
+            {investments.map((investment) => (
               <div key={investment.id} className="p-6 rounded-2xl backdrop-blur-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20 hover:border-white/30 transition-all duration-300">
                 <div className="flex flex-col md:flex-row gap-6">
                   <img 
@@ -430,7 +427,7 @@ const Dashboard: React.FC = () => {
             transition={{ duration: 0.6 }}
             className="grid md:grid-cols-2 gap-6"
           >
-            {perks.map((perk, index) => (
+            {perks.map((perk) => (
               <div key={perk.id} className="p-6 rounded-2xl backdrop-blur-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20">
                 <div className="flex items-start gap-4 mb-4">
                   <div className={`p-3 rounded-xl ${

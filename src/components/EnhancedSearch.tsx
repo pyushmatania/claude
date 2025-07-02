@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowDown, 
@@ -82,7 +82,7 @@ const EnhancedSearch: React.FC<EnhancedSearchProps> = ({ onSelectProject }) => {
   };
 
   // Handle search
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     if (!searchTerm.trim() && activeCategory === 'all' && activeType === 'all' && 
         activeLanguage === 'all' && activeGenre === 'all' && 
         fundingRange[0] === 0 && fundingRange[1] === 100) {
@@ -136,7 +136,7 @@ const EnhancedSearch: React.FC<EnhancedSearchProps> = ({ onSelectProject }) => {
     results = sortResults(results, sortBy, sortOrder);
     
     setSearchResults(results);
-  };
+  }, [searchTerm, activeCategory, activeType, activeLanguage, activeGenre, fundingRange, sortBy, sortOrder]);
 
   // Sort results based on criteria
   const sortResults = (results: Project[], sortField: string, order: 'asc' | 'desc') => {
@@ -156,12 +156,13 @@ const EnhancedSearch: React.FC<EnhancedSearchProps> = ({ onSelectProject }) => {
         case 'rating':
           compareResult = (a.rating || 0) - (b.rating || 0);
           break;
-        case 'timeLeft':
+        case 'timeLeft': {
           // Convert "X days" to number
           const aDays = a.timeLeft ? parseInt(a.timeLeft.split(' ')[0]) : Infinity;
           const bDays = b.timeLeft ? parseInt(b.timeLeft.split(' ')[0]) : Infinity;
           compareResult = aDays - bDays;
           break;
+        }
         default: // relevance - keep original order
           return 0;
       }
@@ -204,7 +205,7 @@ const EnhancedSearch: React.FC<EnhancedSearchProps> = ({ onSelectProject }) => {
     if (isSearching) {
       handleSearch();
     }
-  }, [activeCategory, activeType, activeLanguage, activeGenre, fundingRange, sortBy, sortOrder]);
+  }, [activeCategory, activeType, activeLanguage, activeGenre, fundingRange, sortBy, sortOrder, isSearching, handleSearch]);
 
   return (
     <div className={`min-h-screen pt-20 transition-all duration-[3000ms] ${

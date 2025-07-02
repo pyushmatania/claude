@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Play, ArrowRight, Film, Music, TrendingUp, Users, DollarSign, Target, Award, Star, Zap, Crown, Gift, Sparkles, CheckCircle, Globe, Calendar, BarChart3, Coins } from 'lucide-react';
+import { ArrowRight, TrendingUp, Users, DollarSign, Target, Sparkles, CheckCircle, Globe, Calendar, BarChart3, Coins } from 'lucide-react';
 import Typewriter from './Typewriter';
 import AnimatedNumber from './AnimatedNumber';
 import { useTheme } from './ThemeProvider';

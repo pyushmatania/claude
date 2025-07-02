@@ -9,7 +9,6 @@ import {
   ShoppingCart, 
   Grid3X3, 
   List, 
-  SlidersHorizontal,
   X,
   Shirt,
   Watch,
@@ -17,11 +16,9 @@ import {
   Crown,
   Tag,
   Clock,
-  Users,
   TrendingUp,
   Zap,
-  Gift,
-  Package
+  Gift
 } from 'lucide-react';
 import { useTheme } from './ThemeProvider';
 

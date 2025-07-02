@@ -6,52 +6,24 @@ import {
   Heart, 
   Share2, 
   Crown, 
-  Star, 
   Camera, 
-  Music, 
-  Film, 
-  Mic,
   Video,
   Image,
   Send,
-  Search,
   Settings,
   Bell,
-  UserPlus,
   MoreHorizontal,
-  ThumbsUp,
-  MessageSquare,
   Bookmark,
-  TrendingUp,
-  Award,
   Play,
-  Download,
-  Eye,
   Clock,
   MapPin,
-  Calendar,
-  Link,
-  Smile,
   Gift,
-  Zap,
-  Target,
-  DollarSign,
-  Filter,
-  Grid,
-  Compass,
-  ArrowLeft,
   Plus,
   CheckCircle,
   ShoppingBag,
-  Globe,
-  Verified,
-  UserCheck,
   Activity,
   BarChart3,
   Hash,
-  Volume2,
-  Headphones,
-  Tv,
   Ticket
 } from 'lucide-react';
 import { useTheme } from './ThemeProvider';
@@ -60,15 +32,11 @@ import Merchandise from './Merchandise';
 const Community: React.FC = () => {
   const [selectedCircle, setSelectedCircle] = useState<string>('pathaan-circle');
   const [activeTab, setActiveTab] = useState<'feed' | 'channels' | 'friends' | 'media' | 'perks' | 'merch'>('feed');
-  const [selectedPost, setSelectedPost] = useState<string | null>(null);
   const [newPost, setNewPost] = useState('');
   const [postImage, setPostImage] = useState<File | null>(null);
   const [postVideo, setPostVideo] = useState<File | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
-  const [showComments, setShowComments] = useState<string | null>(null);
-  const [newComment, setNewComment] = useState('');
-  const [showPostModal, setShowPostModal] = useState(false);
   const [selectedChannel, setSelectedChannel] = useState<string>('announcements');
   const [newMessage, setNewMessage] = useState('');
   const [messages, setMessages] = useState<Record<string, {user:string; message:string; time:string}[]>>({
@@ -335,7 +303,24 @@ const Community: React.FC = () => {
     { id: 'behind-scenes', name: 'behind-the-scenes', icon: '🎭', unread: 5 }
   ];
 
-  const [feedPosts, setFeedPosts] = useState<any[]>([
+  const [feedPosts, setFeedPosts] = useState<Array<{
+    id: string;
+    user: {
+      name: string;
+      avatar: string;
+      verified: boolean;
+      role: string;
+    };
+    timestamp: string;
+    content: string;
+    media?: {
+      type: string;
+      url: string;
+    };
+    reactions: Array<{ emoji: string; count: number }>;
+    comments: number;
+    shares: number;
+  }>>([
     {
       id: '1',
       user: {
@@ -640,7 +625,7 @@ const Community: React.FC = () => {
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
+              onClick={() => setActiveTab(tab.id as 'feed' | 'channels' | 'friends' | 'media' | 'perks' | 'merch')}
               className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
                 activeTab === tab.id
                   ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white'
