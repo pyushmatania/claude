@@ -16,6 +16,7 @@ import {
 import { useTheme } from '../../ThemeProvider';
 import { useAdmin, ActivityLog } from '../AdminContext';
 import DataTable from '../shared/DataTable';
+import { Column } from 'react-table';
 
 const ActivityLogPanel: React.FC = () => {
   const { theme } = useTheme();
@@ -24,12 +25,14 @@ const ActivityLogPanel: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterResourceType, setFilterResourceType] = useState<string>('all');
   const [filterUser, setFilterUser] = useState<string>('all');
-  const [sortField, setSortField] = useState<keyof ActivityLog>('timestamp');
+  const [sortField, setSortField] = useState<string>('timestamp');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [dateRange, setDateRange] = useState<{ start: string; end: string }>({
     start: '',
     end: ''
   });
+
+  const validSortFields: (keyof ActivityLog)[] = ['timestamp', 'action', 'userName', 'resourceType'];
 
   // Get unique users for filter
   const users = useMemo(() => {
@@ -74,21 +77,22 @@ const ActivityLogPanel: React.FC = () => {
         return matchesSearch && matchesResourceType && matchesUser && matchesDateRange;
       })
       .sort((a, b) => {
-        // Handle date fields
-        if (sortField === 'timestamp') {
+        if (validSortFields.includes(sortField as keyof ActivityLog)) {
+          const key = sortField as keyof ActivityLog;
+          if (key === 'timestamp') {
+            return sortDirection === 'asc'
+              ? new Date(a[key] as string).getTime() - new Date(b[key] as string).getTime()
+              : new Date(b[key] as string).getTime() - new Date(a[key] as string).getTime();
+          }
           return sortDirection === 'asc'
-            ? new Date(a[sortField]).getTime() - new Date(b[sortField]).getTime()
-            : new Date(b[sortField]).getTime() - new Date(a[sortField]).getTime();
+            ? String(a[key]).localeCompare(String(b[key]))
+            : String(b[key]).localeCompare(String(a[key]));
         }
-        
-        // Handle string fields
-        return sortDirection === 'asc'
-          ? String(a[sortField]).localeCompare(String(b[sortField]))
-          : String(b[sortField]).localeCompare(String(a[sortField]));
+        return 0;
       });
   }, [activityLogs, searchTerm, filterResourceType, filterUser, dateRange, sortField, sortDirection]);
 
-  const handleSort = (field: keyof ActivityLog) => {
+  const handleSort = (field: string) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
@@ -127,11 +131,11 @@ const ActivityLogPanel: React.FC = () => {
     }).format(date);
   };
 
-  const columns = [
+  const columns: Column<ActivityLog>[] = [
     {
       Header: 'Action',
       accessor: 'action',
-      Cell: ({ row }: any) => (
+      Cell: ({ row }) => (
         <div className="flex items-center gap-3">
           <div className={`p-2 rounded-lg ${
             theme === 'light' ? 'bg-gray-100' : 'bg-gray-700'
@@ -154,7 +158,7 @@ const ActivityLogPanel: React.FC = () => {
     {
       Header: 'User',
       accessor: 'userName',
-      Cell: ({ value }: any) => (
+      Cell: ({ value }) => (
         <div className="flex items-center gap-2">
           <User className={`w-4 h-4 ${theme === 'light' ? 'text-gray-500' : 'text-gray-400'}`} />
           <span className={theme === 'light' ? 'text-gray-900' : 'text-white'}>
@@ -166,7 +170,7 @@ const ActivityLogPanel: React.FC = () => {
     {
       Header: 'Resource Type',
       accessor: 'resourceType',
-      Cell: ({ value }: any) => (
+      Cell: ({ value }) => (
         <div className="flex items-center gap-2">
           {getResourceTypeIcon(value)}
           <span className={`capitalize ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
@@ -178,7 +182,7 @@ const ActivityLogPanel: React.FC = () => {
     {
       Header: 'Timestamp',
       accessor: 'timestamp',
-      Cell: ({ value }: any) => (
+      Cell: ({ value }) => (
         <div className="flex items-center gap-2">
           <Clock className={`w-4 h-4 ${theme === 'light' ? 'text-gray-500' : 'text-gray-400'}`} />
           <span className={theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>

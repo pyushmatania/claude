@@ -4,6 +4,7 @@ import { X, Upload, Loader, Plus, Image, Video, FileAudio, FileText } from 'luci
 import { useTheme } from '../../ThemeProvider';
 import { useAdmin, MediaAsset } from '../AdminContext';
 import { useDropzone } from 'react-dropzone';
+import { useToast } from '../../../hooks/useToast';
 
 interface MediaFormProps {
   asset: MediaAsset | null;
@@ -14,6 +15,7 @@ interface MediaFormProps {
 const MediaForm: React.FC<MediaFormProps> = ({ asset, isOpen, onClose }) => {
   const { theme } = useTheme();
   const { addMediaAsset, updateMediaAsset, projects } = useAdmin();
+  const { toast } = useToast();
   
   const [formData, setFormData] = useState<Omit<MediaAsset, 'id' | 'createdAt'>>({
     title: '',
@@ -76,7 +78,7 @@ const MediaForm: React.FC<MediaFormProps> = ({ asset, isOpen, onClose }) => {
     
     // Get dimensions for images
     if (type === 'image') {
-      const img = new Image();
+      const img = document.createElement('img');
       img.onload = () => {
         setFormData(prev => ({
           ...prev,
@@ -181,7 +183,7 @@ const MediaForm: React.FC<MediaFormProps> = ({ asset, isOpen, onClose }) => {
       
       onClose();
     } catch (error) {
-      console.error('Error saving media asset:', error);
+      toast.error('Error saving media asset', error instanceof Error ? error.message : 'An unexpected error occurred');
     } finally {
       setIsSubmitting(false);
     }

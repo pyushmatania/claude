@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, Mail, Lock, User, AlertCircle, CheckCircle, Loader, Check, X, ArrowLeft } from 'lucide-react';
 import { useAuth } from './AuthProvider';
 import { useTheme } from '../ThemeProvider';
+import { useToast } from '../../hooks/useToast';
 
 interface RegisterFormProps {
   onSwitchToLogin: () => void;
@@ -25,6 +26,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin, onClose })
 
   const { register, isLoading } = useAuth();
   const { theme } = useTheme();
+  const { toast } = useToast();
 
   // Password strength validation
   const getPasswordStrength = (password: string) => {
@@ -86,11 +88,12 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin, onClose })
     try {
       await register(formData.email, formData.password, formData.name);
       setShowSuccess(true);
+      toast.success('Account created successfully!');
       setTimeout(() => {
         onClose();
       }, 2000);
     } catch (error) {
-      setErrors({ submit: 'Registration failed. Please try again.' });
+      toast.error('Registration failed. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -375,18 +378,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin, onClose })
             </motion.p>
           )}
         </div>
-
-        {/* Submit Error */}
-        {errors.submit && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="p-4 rounded-xl bg-red-500/20 border border-red-500/30 flex items-center gap-3"
-          >
-            <AlertCircle className="w-5 h-5 text-red-400" />
-            <span className="text-red-300 text-sm">{errors.submit}</span>
-          </motion.div>
-        )}
 
         {/* Submit Button */}
         <motion.button

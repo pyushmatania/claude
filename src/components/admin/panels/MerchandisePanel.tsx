@@ -18,10 +18,13 @@ import { useAdmin, MerchandiseItem } from '../AdminContext';
 import MerchandiseForm from '../forms/MerchandiseForm';
 import ConfirmDialog from '../shared/ConfirmDialog';
 import DataTable from '../shared/DataTable';
+import { Column } from 'react-table';
+import { useToast } from '../../../hooks/useToast';
 
 const MerchandisePanel: React.FC = () => {
   const { theme } = useTheme();
   const { merchandiseItems, deleteMerchandiseItem } = useAdmin();
+  const { toast } = useToast();
   
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<MerchandiseItem | null>(null);
@@ -30,8 +33,11 @@ const MerchandisePanel: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
-  const [sortField, setSortField] = useState<keyof MerchandiseItem>('createdAt');
+  const [sortField, setSortField] = useState<string>('createdAt');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const validSortFields: (keyof MerchandiseItem)[] = [
+    'createdAt', 'title', 'category', 'status', 'price', 'stockLevel'
+  ];
 
   // Filter and sort merchandise items
   const filteredItems = useMemo(() => {
@@ -49,24 +55,23 @@ const MerchandisePanel: React.FC = () => {
         return matchesSearch && matchesCategory && matchesStatus;
       })
       .sort((a, b) => {
-        // Handle date fields
-        if (sortField === 'createdAt') {
+        if (validSortFields.includes(sortField as keyof MerchandiseItem)) {
+          const key = sortField as keyof MerchandiseItem;
+          if (key === 'createdAt') {
+            return sortDirection === 'asc'
+              ? new Date(a[key] as string).getTime() - new Date(b[key] as string).getTime()
+              : new Date(b[key] as string).getTime() - new Date(a[key] as string).getTime();
+          }
+          if (typeof a[key] === 'number' && typeof b[key] === 'number') {
+            return sortDirection === 'asc'
+              ? (a[key] as number) - (b[key] as number)
+              : (b[key] as number) - (a[key] as number);
+          }
           return sortDirection === 'asc'
-            ? new Date(a[sortField]).getTime() - new Date(b[sortField]).getTime()
-            : new Date(b[sortField]).getTime() - new Date(a[sortField]).getTime();
+            ? String(a[key]).localeCompare(String(b[key]))
+            : String(b[key]).localeCompare(String(a[key]));
         }
-        
-        // Handle numeric fields
-        if (typeof a[sortField] === 'number' && typeof b[sortField] === 'number') {
-          return sortDirection === 'asc'
-            ? (a[sortField] as number) - (b[sortField] as number)
-            : (b[sortField] as number) - (a[sortField] as number);
-        }
-        
-        // Handle string fields
-        return sortDirection === 'asc'
-          ? String(a[sortField]).localeCompare(String(b[sortField]))
-          : String(b[sortField]).localeCompare(String(a[sortField]));
+        return 0;
       });
   }, [merchandiseItems, searchTerm, filterCategory, filterStatus, sortField, sortDirection]);
 
@@ -76,7 +81,7 @@ const MerchandisePanel: React.FC = () => {
     return Array.from(uniqueCategories);
   }, [merchandiseItems]);
 
-  const handleSort = (field: keyof MerchandiseItem) => {
+  const handleSort = (field: string) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
@@ -87,7 +92,12 @@ const MerchandisePanel: React.FC = () => {
 
   const handleDeleteConfirm = () => {
     if (itemToDelete) {
-      deleteMerchandiseItem(itemToDelete);
+      try {
+        deleteMerchandiseItem(itemToDelete);
+        toast.success('Merchandise item deleted');
+      } catch (error) {
+        toast.error('Error deleting merchandise item', error instanceof Error ? error.message : 'An unexpected error occurred');
+      }
       setItemToDelete(null);
     }
   };
@@ -105,11 +115,11 @@ const MerchandisePanel: React.FC = () => {
     }
   };
 
-  const columns = [
+  const columns: Column<MerchandiseItem>[] = [
     {
       Header: 'Item',
       accessor: 'title',
-      Cell: ({ row }: any) => (
+      Cell: ({ row }) => (
         <div className="flex items-center gap-3">
           {row.original.image ? (
             <img 
@@ -143,7 +153,7 @@ const MerchandisePanel: React.FC = () => {
     {
       Header: 'Price',
       accessor: 'price',
-      Cell: ({ value }: any) => (
+      Cell: ({ value }) => (
         <span className={`font-medium ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
           ₹{value.toLocaleString()}
         </span>
@@ -152,7 +162,7 @@ const MerchandisePanel: React.FC = () => {
     {
       Header: 'Stock',
       accessor: 'stockLevel',
-      Cell: ({ row }: any) => (
+      Cell: ({ row }) => (
         <div className="flex items-center gap-2">
           {getStatusIcon(row.original.status)}
           <span className={`${
@@ -168,7 +178,7 @@ const MerchandisePanel: React.FC = () => {
     {
       Header: 'Status',
       accessor: 'status',
-      Cell: ({ value }: any) => (
+      Cell: ({ value }) => (
         <span className={`capitalize ${
           value === 'in-stock' ? 'text-green-500' :
           value === 'low-stock' ? 'text-yellow-500' :
@@ -181,7 +191,7 @@ const MerchandisePanel: React.FC = () => {
     {
       Header: 'Created',
       accessor: 'createdAt',
-      Cell: ({ value }: any) => (
+      Cell: ({ value }) => (
         <span className={theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>
           {new Date(value).toLocaleDateString()}
         </span>
@@ -189,7 +199,7 @@ const MerchandisePanel: React.FC = () => {
     },
     {
       Header: 'Actions',
-      Cell: ({ row }: any) => (
+      Cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <button
             onClick={() => setEditingItem(row.original)}

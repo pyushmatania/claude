@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { X, Loader } from 'lucide-react';
 import { useTheme } from '../../ThemeProvider';
 import { useAdmin, Perk } from '../AdminContext';
+import { useToast } from '../../../hooks/useToast';
 
 interface PerkFormProps {
   perk: Perk | null;
@@ -13,6 +14,7 @@ interface PerkFormProps {
 const PerkForm: React.FC<PerkFormProps> = ({ perk, isOpen, onClose }) => {
   const { theme } = useTheme();
   const { addPerk, updatePerk, projects } = useAdmin();
+  const { toast } = useToast();
   
   const [formData, setFormData] = useState<Omit<Perk, 'id' | 'createdAt'>>({
     title: '',
@@ -100,7 +102,7 @@ const PerkForm: React.FC<PerkFormProps> = ({ perk, isOpen, onClose }) => {
       
       onClose();
     } catch (error) {
-      console.error('Error saving perk:', error);
+      toast.error('Error saving perk', error instanceof Error ? error.message : 'An unexpected error occurred');
     } finally {
       setIsSubmitting(false);
     }

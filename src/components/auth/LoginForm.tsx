@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, Mail, Lock, AlertCircle, CheckCircle, Loader, ArrowLeft } from 'lucide-react';
 import { useAuth } from './AuthProvider';
 import { useTheme } from '../ThemeProvider';
+import { useToast } from '../../hooks/useToast';
 
 interface LoginFormProps {
   onSwitchToRegister: () => void;
@@ -22,6 +23,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister, onClose }) =>
 
   const { login, isLoading } = useAuth();
   const { theme } = useTheme();
+  const { toast } = useToast();
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -51,11 +53,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToRegister, onClose }) =>
     try {
       await login(formData.email, formData.password, formData.rememberMe);
       setShowSuccess(true);
+      toast.success('Login successful!');
       setTimeout(() => {
         onClose();
       }, 1500);
     } catch (error) {
-      setErrors({ submit: 'Invalid email or password. Try demo@circles.com / password123' });
+      toast.error('Invalid email or password. Try demo@circles.com / password123');
     } finally {
       setIsSubmitting(false);
     }

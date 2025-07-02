@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Eye, EyeOff, Lock, AlertCircle, CheckCircle, Loader, Check, X } from 'lucide-react';
 import { useAuth } from './AuthProvider';
 import { useTheme } from '../ThemeProvider';
+import { useToast } from '../../hooks/useToast';
 
 interface ChangePasswordFormProps {
   onSuccess: () => void;
@@ -23,6 +24,7 @@ const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({ onSuccess, onCa
 
   const { changePassword } = useAuth();
   const { theme } = useTheme();
+  const { toast } = useToast();
 
   // Password strength validation
   const getPasswordStrength = (password: string) => {
@@ -72,8 +74,9 @@ const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({ onSuccess, onCa
     try {
       await changePassword(formData.currentPassword, formData.newPassword);
       onSuccess();
+      toast.success('Password changed successfully!');
     } catch (error) {
-      setErrors({ submit: 'Failed to change password. Please check your current password and try again.' });
+      toast.error('Failed to change password. Please check your current password and try again.');
     } finally {
       setIsSubmitting(false);
     }

@@ -8,7 +8,6 @@ import {
   Video,
   FileAudio,
   FileText,
-  Tag,
   Download,
   RefreshCw,
   ExternalLink,
@@ -19,10 +18,13 @@ import { useAdmin, MediaAsset } from '../AdminContext';
 import MediaForm from '../forms/MediaForm';
 import ConfirmDialog from '../shared/ConfirmDialog';
 import DataTable from '../shared/DataTable';
+import { Column } from 'react-table';
+import { useToast } from '../../../hooks/useToast';
 
 const MediaPanel: React.FC = () => {
   const { theme } = useTheme();
   const { mediaAssets, deleteMediaAsset, projects } = useAdmin();
+  const { toast } = useToast();
   
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingAsset, setEditingAsset] = useState<MediaAsset | null>(null);
@@ -31,8 +33,13 @@ const MediaPanel: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
   const [filterProject, setFilterProject] = useState<string>('all');
-  const [sortField, setSortField] = useState<keyof MediaAsset>('createdAt');
+  const [sortField, setSortField] = useState<string>('createdAt');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+
+  // Type-safe valid sort fields
+  const validSortFields: (keyof MediaAsset)[] = [
+    'createdAt', 'title', 'type', 'fileSize', 'projectId', 'tags', 'dimensions'
+  ];
 
   // Filter and sort media assets
   const filteredAssets = useMemo(() => {
@@ -51,28 +58,27 @@ const MediaPanel: React.FC = () => {
         return matchesSearch && matchesType && matchesProject;
       })
       .sort((a, b) => {
-        // Handle date fields
-        if (sortField === 'createdAt') {
+        if (validSortFields.includes(sortField as keyof MediaAsset)) {
+          const key = sortField as keyof MediaAsset;
+          if (key === 'createdAt') {
+            return sortDirection === 'asc'
+              ? new Date(a[key] as string).getTime() - new Date(b[key] as string).getTime()
+              : new Date(b[key] as string).getTime() - new Date(a[key] as string).getTime();
+          }
+          if (typeof a[key] === 'number' && typeof b[key] === 'number') {
+            return sortDirection === 'asc'
+              ? (a[key] as number) - (b[key] as number)
+              : (b[key] as number) - (a[key] as number);
+          }
           return sortDirection === 'asc'
-            ? new Date(a[sortField]).getTime() - new Date(b[sortField]).getTime()
-            : new Date(b[sortField]).getTime() - new Date(a[sortField]).getTime();
+            ? String(a[key]).localeCompare(String(b[key]))
+            : String(b[key]).localeCompare(String(a[key]));
         }
-        
-        // Handle numeric fields
-        if (typeof a[sortField] === 'number' && typeof b[sortField] === 'number') {
-          return sortDirection === 'asc'
-            ? (a[sortField] as number) - (b[sortField] as number)
-            : (b[sortField] as number) - (a[sortField] as number);
-        }
-        
-        // Handle string fields
-        return sortDirection === 'asc'
-          ? String(a[sortField]).localeCompare(String(b[sortField]))
-          : String(b[sortField]).localeCompare(String(a[sortField]));
+        return 0;
       });
   }, [mediaAssets, searchTerm, filterType, filterProject, sortField, sortDirection]);
 
-  const handleSort = (field: keyof MediaAsset) => {
+  const handleSort = (field: string) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
@@ -83,7 +89,12 @@ const MediaPanel: React.FC = () => {
 
   const handleDeleteConfirm = () => {
     if (assetToDelete) {
-      deleteMediaAsset(assetToDelete);
+      try {
+        deleteMediaAsset(assetToDelete);
+        toast.success('Media asset deleted');
+      } catch (error) {
+        toast.error('Error deleting media asset', error instanceof Error ? error.message : 'An unexpected error occurred');
+      }
       setAssetToDelete(null);
     }
   };
@@ -115,11 +126,11 @@ const MediaPanel: React.FC = () => {
     // In a real app, you would show a toast notification here
   };
 
-  const columns = [
+  const columns: Column<MediaAsset>[] = [
     {
       Header: 'Asset',
       accessor: 'title',
-      Cell: ({ row }: any) => (
+      Cell: ({ row }) => (
         <div className="flex items-center gap-3">
           {row.original.type === 'image' && row.original.url ? (
             <img 
@@ -158,7 +169,7 @@ const MediaPanel: React.FC = () => {
     {
       Header: 'Project',
       accessor: 'projectId',
-      Cell: ({ row }: any) => {
+      Cell: ({ row }) => {
         const project = projects.find(p => p.id === row.original.projectId);
         return (
           <span className={theme === 'light' ? 'text-gray-900' : 'text-white'}>
@@ -170,7 +181,7 @@ const MediaPanel: React.FC = () => {
     {
       Header: 'Tags',
       accessor: 'tags',
-      Cell: ({ value }: any) => (
+      Cell: ({ value }) => (
         <div className="flex flex-wrap gap-1">
           {value.slice(0, 2).map((tag: string, index: number) => (
             <span 
@@ -195,7 +206,7 @@ const MediaPanel: React.FC = () => {
     {
       Header: 'Size',
       accessor: 'fileSize',
-      Cell: ({ value }: any) => (
+      Cell: ({ value }) => (
         <span className={theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>
           {formatFileSize(value)}
         </span>
@@ -204,7 +215,7 @@ const MediaPanel: React.FC = () => {
     {
       Header: 'Created',
       accessor: 'createdAt',
-      Cell: ({ value }: any) => (
+      Cell: ({ value }) => (
         <span className={theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>
           {new Date(value).toLocaleDateString()}
         </span>
@@ -212,7 +223,7 @@ const MediaPanel: React.FC = () => {
     },
     {
       Header: 'Actions',
-      Cell: ({ row }: any) => (
+      Cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <button
             onClick={() => window.open(row.original.url, '_blank')}

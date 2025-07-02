@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { X, Upload, Loader } from 'lucide-react';
 import { useTheme } from '../../ThemeProvider';
 import { useAdmin, Project } from '../AdminContext';
+import { useToast } from '../../../hooks/useToast';
 
 interface ProjectFormProps {
   project: Project | null;
@@ -13,6 +14,7 @@ interface ProjectFormProps {
 const ProjectForm: React.FC<ProjectFormProps> = ({ project, isOpen, onClose }) => {
   const { theme } = useTheme();
   const { addProject, updateProject, projects } = useAdmin();
+  const { toast } = useToast();
   
   const [formData, setFormData] = useState<Omit<Project, 'id' | 'createdAt' | 'updatedAt'>>({
     title: '',
@@ -125,7 +127,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ project, isOpen, onClose }) =
       
       onClose();
     } catch (error) {
-      console.error('Error saving project:', error);
+      toast.error('Error saving project', (error instanceof Error ? error.message : 'An unexpected error occurred'));
     } finally {
       setIsSubmitting(false);
     }

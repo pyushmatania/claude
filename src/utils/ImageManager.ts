@@ -56,7 +56,6 @@ class ImageManager {
 
     try {
       if (!this.tmdbApiKey) {
-        console.error('TMDb API key is missing. Add it to your .env file as VITE_TMDB_API_KEY');
         return null;
       }
 
@@ -90,7 +89,6 @@ class ImageManager {
         return result;
       }
     } catch (error) {
-      console.error('TMDb API error:', error);
     }
     
     return null;
@@ -111,7 +109,6 @@ class ImageManager {
       await this.ensureSpotifyToken();
       
       if (!this.spotifyToken) {
-        console.error('Failed to get Spotify token');
         return null;
       }
       
@@ -149,7 +146,6 @@ class ImageManager {
         return result;
       }
     } catch (error) {
-      console.error('Spotify API error:', error);
     }
     
     return null;
@@ -165,7 +161,6 @@ class ImageManager {
 
     try {
       if (!this.spotifyClientId || !this.spotifyClientSecret) {
-        console.error('Spotify credentials missing. Add them to your .env file as VITE_SPOTIFY_CLIENT_ID and VITE_SPOTIFY_CLIENT_SECRET');
         return;
       }
 
@@ -182,8 +177,6 @@ class ImageManager {
       this.spotifyToken = data.access_token;
       this.spotifyTokenExpiry = Date.now() + (data.expires_in * 1000);
     } catch (error) {
-      console.error('Spotify token error:', error);
-      throw error;
     }
   }
 
@@ -193,7 +186,6 @@ class ImageManager {
   async getMoviePosterOMDb(title: string, year: number | null = null): Promise<ImageData | null> {
     try {
       if (!this.omdbApiKey) {
-        console.error('OMDb API key is missing. Add it to your .env file as VITE_OMDB_API_KEY');
         return null;
       }
 
@@ -221,7 +213,6 @@ class ImageManager {
         };
       }
     } catch (error) {
-      console.error('OMDb API error:', error);
     }
     
     return null;
@@ -283,7 +274,6 @@ class ImageManager {
         await this.delay(100);
         
       } catch (error) {
-        console.error(`Error processing ${item.title}:`, error);
         results.push({
           ...item,
           imageData: { url: item.fallbackImage || 'https://images.pexels.com/photos/7991579/pexels-photo-7991579.jpeg?auto=compress&cs=tinysrgb&w=400' }
